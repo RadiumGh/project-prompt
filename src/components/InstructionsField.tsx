@@ -117,19 +117,11 @@ export default function InstructionsField() {
           label="Add files tree structure"
         />
 
-        <Button
-          variant="outlined"
-          color="primary"
-          onClick={() => setAttachModalOpen(true)}
-          sx={{ ml: 1 }}
-        >
-          Attach merge request context
-        </Button>
-
         <Stack direction="row" spacing={1}>
           <IconButton color="inherit" onClick={handleCopyPrompt}>
             <ContentCopyIcon />
           </IconButton>
+
           <Button
             variant="contained"
             color="primary"
@@ -140,6 +132,15 @@ export default function InstructionsField() {
           </Button>
         </Stack>
       </Stack>
+
+      <Button
+        variant="outlined"
+        color="primary"
+        onClick={() => setAttachModalOpen(true)}
+        sx={{ mt: 1, width: 'fit-content' }}
+      >
+        Attach merge request context
+      </Button>
 
       <Modal show={showPromptModal} onClose={handleCloseModal}>
         {/* We'll pass needed data to PromptGenerator */}
