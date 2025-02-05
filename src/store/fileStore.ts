@@ -18,7 +18,7 @@ interface FileNode {
   children?: FileNode[]
 }
 
-interface LoadedFile {
+export interface LoadedFile {
   path: string
   content: string
   tokenCount: number
@@ -45,7 +45,8 @@ interface FileStoreState {
   toggleSelection: (path: string, handle: any, isDirectory: boolean) => void
   clearSelection: () => void
   loadSelectedFiles: () => Promise<void>
-  addAttachmentFile: (content: string) => void
+  addAttachmentFile: (name: string, content: string) => void
+  removeAttachmentFile: (filePath: string) => void
 }
 
 async function buildFileTree(
@@ -335,7 +336,7 @@ export const useFileStore = create<FileStoreState>()(
 
         set({ loadedFiles })
       },
-      addAttachmentFile: (content: string) => {
+      addAttachmentFile: (name: string, content: string) => {
         const tokenCount = approximateTokens(content)
         const newFile: LoadedFile = {
           path: 'mergeRequestContext.md',
@@ -344,6 +345,10 @@ export const useFileStore = create<FileStoreState>()(
         }
         const { loadedFiles } = get()
         set({ loadedFiles: [...loadedFiles, newFile] })
+      },
+      removeAttachmentFile: (filePath: string) => {
+        const { loadedFiles } = get()
+        set({ loadedFiles: loadedFiles.filter(file => file.path !== filePath) })
       },
     }),
     {
