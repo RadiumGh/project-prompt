@@ -35,10 +35,12 @@ export default function AttachMergeRequestModal({
     apiToken,
     apiUrl,
     ignorePatterns,
+    projectId,
     setMergeRequestLink,
     setApiToken,
     setApiUrl,
     setIgnorePatterns,
+    setProjectId,
   } = useMergeRequestStore()
 
   const { showErrorToast } = useToastStore()
@@ -58,14 +60,20 @@ export default function AttachMergeRequestModal({
       const payload = {
         mrUrl: mergeRequestLink,
         accessToken: apiToken,
+        projectId,
         ignorePatterns: ignorePatterns?.split('\n') ?? [],
       }
 
-      const response = await axios.post(mergeRequestLink, payload)
-      const data = response.data
+      const response = await axios.post(`${apiUrl}/review`, payload)
+      const data = response.data as { context: string; diff: any[] } | null
 
-      if (data && data.context)
-        addAttachmentFile('merge-request-context', data.context)
+      if (data) {
+        const { context, diff } = data
+
+        if (diff)
+          addAttachmentFile('merge-request diff', JSON.stringify(data.diff))
+        if (context) addAttachmentFile('merge-request context', data.context)
+      }
     } catch (err) {
       console.error('Failed to fetch merge request context:', err)
       showErrorToast('Fetching merge-request Context Failed!')
@@ -107,6 +115,13 @@ export default function AttachMergeRequestModal({
             value={apiToken}
             onChange={e => setApiToken(e.target.value)}
             fullWidth
+          />
+
+          <TextField
+            label="Project ID"
+            value={projectId}
+            onChange={e => setProjectId(e.target.value)}
+            sx={{ width: '350px' }}
           />
         </Box>
 

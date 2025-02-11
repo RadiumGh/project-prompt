@@ -45,7 +45,7 @@ interface FileStoreState {
   toggleSelection: (path: string, handle: any, isDirectory: boolean) => void
   clearSelection: () => void
   loadSelectedFiles: () => Promise<void>
-  addAttachmentFile: (name: string, content: string) => void
+  addAttachmentFile: (path: string, content: string) => void
   removeAttachmentFile: (filePath: string) => void
 }
 
@@ -336,15 +336,15 @@ export const useFileStore = create<FileStoreState>()(
 
         set({ loadedFiles })
       },
-      addAttachmentFile: (name: string, content: string) => {
+      addAttachmentFile: (path: string, content: string) => {
         const tokenCount = approximateTokens(content)
         const newFile: LoadedFile = {
-          path: 'mergeRequestContext.md',
+          path,
           content,
           tokenCount,
         }
         const { loadedFiles } = get()
-        set({ loadedFiles: [...loadedFiles, newFile] })
+        set({ loadedFiles: [newFile, ...loadedFiles] })
       },
       removeAttachmentFile: (filePath: string) => {
         const { loadedFiles } = get()

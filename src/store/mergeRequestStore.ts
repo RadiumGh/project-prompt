@@ -6,10 +6,12 @@ interface MergeRequestStoreState {
   mergeRequestLink: string
   apiToken: string
   ignorePatterns: string
+  projectId: string
   setApiUrl: (val: string) => void
   setMergeRequestLink: (val: string) => void
   setApiToken: (val: string) => void
   setIgnorePatterns: (val: string) => void
+  setProjectId: (val: string) => void
 }
 
 export const useMergeRequestStore = create<MergeRequestStoreState>()(
@@ -19,6 +21,7 @@ export const useMergeRequestStore = create<MergeRequestStoreState>()(
       mergeRequestLink: '',
       apiToken: '',
       ignorePatterns: '',
+      projectId: '',
 
       setApiUrl: val => {
         set({ apiUrl: val })
@@ -31,6 +34,9 @@ export const useMergeRequestStore = create<MergeRequestStoreState>()(
       },
       setIgnorePatterns: val => {
         set({ ignorePatterns: val })
+      },
+      setProjectId: val => {
+        set({ projectId: val })
       },
     }),
     {
