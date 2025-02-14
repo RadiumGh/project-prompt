@@ -113,7 +113,6 @@ export async function applyJsonChangesNode(
  */
 async function handleCreate(change: CreateChange, baseDir: string): Promise<void> {
   const absolutePath = resolveAndCheckPath(baseDir, change.path);
-  // TODO: path sanitization checks (ensure not outside baseDir).
   const dirPath = path.dirname(absolutePath);
   await fs.mkdir(dirPath, { recursive: true });
   await fs.writeFile(absolutePath, change.content.join('\n'), 'utf-8');
@@ -124,7 +123,6 @@ async function handleCreate(change: CreateChange, baseDir: string): Promise<void
  */
 async function handleDelete(change: DeleteChange, baseDir: string): Promise<void> {
   const absolutePath = resolveAndCheckPath(baseDir, change.path);
-  // TODO: path sanitization checks.
   await fs.rm(absolutePath, { force: true, recursive: false });
 }
 
@@ -133,7 +131,6 @@ async function handleDelete(change: DeleteChange, baseDir: string): Promise<void
  */
 async function handleCompleteUpdate(change: CompleteUpdateChange, baseDir: string): Promise<void> {
   const absolutePath = resolveAndCheckPath(baseDir, change.path);
-  // TODO: path sanitization checks.
   const dirPath = path.dirname(absolutePath);
   await fs.mkdir(dirPath, { recursive: true });
   await fs.writeFile(absolutePath, change.new_content.join('\n'), 'utf-8');
@@ -144,7 +141,6 @@ async function handleCompleteUpdate(change: CompleteUpdateChange, baseDir: strin
  */
 async function handlePartialUpdate(change: PartialUpdateChange, baseDir: string): Promise<void> {
   const absolutePath = resolveAndCheckPath(baseDir, change.path);
-  // TODO: path sanitization checks.
 
   let original: string;
   try {
@@ -176,7 +172,6 @@ async function handlePartialUpdate(change: PartialUpdateChange, baseDir: string)
 async function handleRenameMove(change: RenameMoveChange, baseDir: string): Promise<void> {
   const oldAbsolutePath = resolveAndCheckPath(baseDir, change.old_path);
   const newAbsolutePath = resolveAndCheckPath(baseDir, change.new_path);
-  // TODO: path sanitization checks.
 
   let content: Buffer;
   try {
@@ -199,11 +194,15 @@ async function handleRenameMove(change: RenameMoveChange, baseDir: string): Prom
 
 /**
  * A small helper to ensure the path is absolute and inside baseDir.
- * Currently we just do path.resolve. We'll add the real checks in a future subtask.
+ * Throws an error if the resolved path attempts to escape the baseDir.
  */
 function resolveAndCheckPath(baseDir: string, relPath: string): string {
   const abs = path.resolve(baseDir, relPath);
-  // TODO: if path.relative(baseDir, abs).startsWith('..'), throw new Error('Path escapes baseDir!');
+  const relative = path.relative(baseDir, abs);
+  // If relative path starts with '..', it escapes our baseDir
+  if (relative.startsWith('..') || path.isAbsolute(relative)) {
+    throw new Error(`Path escapes baseDir! Attempted path: ${relPath}`);
+  }
   return abs;
 }
 
@@ -225,7 +224,6 @@ function replaceContextBlock(
   }
 
   const start = startIndices[occurrenceIndex - 1];
-  const end = start + matchContext.length;
   fileLines.splice(start, matchContext.length, ...replacementLines);
 }
 
