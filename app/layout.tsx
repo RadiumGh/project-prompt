@@ -3,6 +3,8 @@ export const metadata = {
   description: 'Next.js 13+ layout for the rewriting process'
 }
 
+import ThemeProviderClient from './ThemeProviderClient'
+
 export default function RootLayout({
   children
 }: {
