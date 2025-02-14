@@ -28,3 +28,10 @@
 - **Step 4**: Update build scripts, remove Vite references, finalize documentation to reflect the Next.js architecture.
 
 This file (step-1.md) can be expanded with more details if needed. We will keep referencing it as we go.
+
+## Implementation Log
+### SubTask 1: Basic Next.js Setup
+- Created a new `app/` directory for Next.js 13.
+- Added `layout.tsx` and `page.tsx` with minimal placeholders.
+- Updated `package.json` to include Next.js, TypeScript, and dev scripts to run Next in parallel.
+- Ensured existing Vite-based code remains untouched.
