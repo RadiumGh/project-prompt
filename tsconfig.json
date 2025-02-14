@@ -1,6 +1,6 @@
 
 {
-  // TODO: Next rewriting plan: We'll adjust compilerOptions for Next.js or rely on Next default settings. Keep old config for reference.
+  // Fully migrated to Next.js. Old references removed.
   "compilerOptions": {
     "target": "ES2020",
     "useDefineForClassFields": true,
