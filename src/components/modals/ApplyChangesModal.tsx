@@ -1,3 +1,4 @@
+"use client"
 // <ai_context>
 //  A modal for applying XML-based code changes to the opened directory.
 //  Contains a text area with example XML structure and a button to apply changes.

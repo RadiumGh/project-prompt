@@ -1,4 +1,5 @@
 
+"use client"
 // <ai_context>
 //  A simple modal component that renders its children when "show" is true.
 // </ai_context>

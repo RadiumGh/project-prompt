@@ -1,3 +1,4 @@
+"use client"
 // <ai_context>
 //  A sortable item component for a single custom instruction row in the CustomInstructionsModal.
 //  Uses useSortable to track drag state, and includes a drag handle icon.

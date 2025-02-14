@@ -1,3 +1,4 @@
+"use client"
 // <ai_context>
 //  A text area for the user's instructions that will be appended to the final prompt.
 //  Includes a "Copy Prompt" button at the bottom to copy the entire prompt content.

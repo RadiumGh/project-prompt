@@ -1,3 +1,4 @@
+"use client"
 // <ai_context>
 //  Displays the final combined prompt: instructions + loaded files + active custom instructions
 //  plus a copy button. We retrieve instructions and custom instructions from their stores,

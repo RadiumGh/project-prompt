@@ -1,3 +1,4 @@
+"use client"
 import { useState } from 'react'
 // TODO: Next rewriting plan: Evaluate reading files on Node side vs. client. Keep local approach for now.
 import { Typography, Box, Paper, IconButton } from '@mui/material'

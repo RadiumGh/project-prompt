@@ -1,4 +1,5 @@
 
+"use client"
 // <ai_context>
 //  A global snackbar that listens to the file store's toast state and displays a success/error message.
 // </ai_context>

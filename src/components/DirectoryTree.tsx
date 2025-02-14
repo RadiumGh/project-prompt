@@ -1,4 +1,5 @@
 
+"use client"
 // <ai_context>
 //  Renders the nested directory structure using MUI icons and checkboxes.
 //  Also uses Material icons for folder/file and expand/collapse indicators.

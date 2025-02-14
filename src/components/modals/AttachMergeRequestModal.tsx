@@ -1,3 +1,4 @@
+"use client"
 import axios from 'axios'
 // TODO: Next rewriting plan: Possibly move fetch logic to Next server route or keep axios calls on client if needed.
 import { useState } from 'react'

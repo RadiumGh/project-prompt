@@ -1,3 +1,4 @@
+"use client"
 // <ai_context>
 //  A modal for creating/editing custom instructions. Allows adding new instructions,
 //  editing existing ones, and removing them if needed. All stored in localStorage via the store.

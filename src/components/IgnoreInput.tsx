@@ -1,3 +1,4 @@
+"use client"
 // <ai_context>
 //  A text area for ignore patterns (like .gitignore). Each line is a substring to exclude files/folders.
 // </ai_context>

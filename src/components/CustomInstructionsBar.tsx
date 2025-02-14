@@ -1,4 +1,5 @@
 
+"use client"
 // <ai_context>
 //  Displays a horizontally scrollable list of custom instructions (by name).
 //  Placed above the InstructionsField, toggled on click (no width change).
