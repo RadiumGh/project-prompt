@@ -4,6 +4,7 @@
 // </ai_context>
 
 import { useState } from 'react'
+// TODO: Next rewriting plan: This will shift from client-side FS API to our new Next.js route (server-side applyJsonChanges).
 import {
   Dialog,
   DialogTitle,

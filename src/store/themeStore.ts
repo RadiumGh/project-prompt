@@ -4,6 +4,7 @@
 // </ai_context>
 
 import { create } from 'zustand'
+// TODO: Next rewriting plan: Possibly incorporate Next dynamic theming or continue using this Zustand approach for client theme toggles.
 import { persist } from 'zustand/middleware'
 
 interface ThemeStoreState {

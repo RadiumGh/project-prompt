@@ -4,6 +4,7 @@
 // </ai_context>
 
 import { create } from 'zustand'
+// TODO: Next rewriting plan: We can keep client snackbars or incorporate a universal solution for server error messages. Keep old logic for now.
 import { persist } from 'zustand/middleware'
 import { AlertColor } from '@mui/material'
 

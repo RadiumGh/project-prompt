@@ -1,5 +1,7 @@
 /**
  * Describes a single change of type "create".
+ *
+ * TODO: Next rewriting plan: We'll move logic to server-side Node fs in `app/api/apply-json-changes/route.ts`. Keep old code for reference.
  */
 interface CreateChange {
   type: 'create'

@@ -1,3 +1,4 @@
+// TODO: Next rewriting plan: We might unify instructions with server route or keep local if partial offline usage is desired.
 // <ai_context>
 //  Holds the user's main "instructions" content, plus helpers to build a final prompt
 //  from instructions + optional custom instructions + loaded files (passed in).

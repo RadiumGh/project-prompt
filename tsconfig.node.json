@@ -1,4 +1,5 @@
 {
+  // TODO: Next rewriting plan: This was for Vite config. We might remove or adapt in Next. Keep it for historical reference.
   "compilerOptions": {
     "composite": true,
     "skipLibCheck": true,

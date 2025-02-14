@@ -5,6 +5,7 @@
 // </ai_context>
 
 import { useState } from 'react'
+// TODO: Next rewriting plan: We'll handle server-based directory listing or keep client FS usage. Evaluate Node vs. browser.
 import { Checkbox, IconButton, Typography, Box } from '@mui/material'
 import { styled } from '@mui/material/styles'
 import FolderIcon from '@mui/icons-material/Folder'

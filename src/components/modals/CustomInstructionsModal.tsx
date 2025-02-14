@@ -4,6 +4,7 @@
 // </ai_context>
 
 import { useState } from 'react'
+// TODO: Next rewriting plan: We might store instructions server-side in Next, or preserve local storage approach. Evaluate SSR vs. client.
 import {
   Box,
   Dialog,

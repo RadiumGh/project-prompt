@@ -1,4 +1,5 @@
 import { Dialog, DialogTitle, Typography, Box, IconButton } from '@mui/material'
+// TODO: Next rewriting plan: Could store prompts in a Next server route or keep them local. We'll refine soon.
 import CloseIcon from '@mui/icons-material/Close'
 import { styled } from '@mui/material/styles'
 

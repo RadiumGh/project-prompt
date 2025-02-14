@@ -1,4 +1,5 @@
 import { useState } from 'react'
+// TODO: Next rewriting plan: Evaluate reading files on Node side vs. client. Keep local approach for now.
 import { Typography, Box, Paper, IconButton } from '@mui/material'
 import { LoadedFile, useFileStore } from '../store/fileStore'
 import { formatTokenCount } from '../utils/tokenHelpers'

@@ -4,6 +4,8 @@
 //  but omitting FileSystemDirectoryHandle (cannot be serialized).
 // </ai_context>
 
+// TODO: Next rewriting plan: Evaluate reading directory with Node server route vs. client FS Access. Possibly remove local approach.
+
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { approximateTokens } from '../utils/tokenHelpers'

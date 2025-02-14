@@ -4,6 +4,7 @@
 // </ai_context>
 
 import React from 'react'
+// TODO: Next rewriting plan: We can keep MUI <Dialog> or unify with Next's built-in features, though it’s typically client side.
 import { Dialog, IconButton, Tooltip, Box } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import { styled } from '@mui/material/styles'

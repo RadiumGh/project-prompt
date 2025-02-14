@@ -1,5 +1,6 @@
 
 // <ai_context>
+// TODO: Next rewriting plan: We'll incorporate or adapt this MUI config in Next’s app/layout or separate provider.
 //  Defines MUI theme configurations for light and dark modes,
 //  balancing the gold color so it's less eye-catching (slightly darker).
 //  Also removing primary color usage for textfield focus outlines.

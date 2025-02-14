@@ -1,5 +1,6 @@
 
 // <ai_context>
+// TODO: Next rewriting plan: Evaluate if we fully switch to MUI theming or keep a styled-components approach in Next. Possibly unify both.
 //  Defines two themes (light and dark) for styled-components.
 //  Now includes inputBg for textareas/inputs in dark/light modes.
 // </ai_context>

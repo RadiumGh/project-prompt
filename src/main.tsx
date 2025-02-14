@@ -1,5 +1,6 @@
 
 // <ai_context>
+// TODO: Next rewriting plan: This main.tsx is replaced by Next’s app entry. Keep for reference, but no actual usage eventually.
 //  Main entry point for the React app. Renders App component into #root.
 //  Now uses MUI's ThemeProvider with a custom light/dark theme from new theme store.
 // </ai_context>

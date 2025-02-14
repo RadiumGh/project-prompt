@@ -1,5 +1,7 @@
 # Project Prompt
 
+<!-- TODO: We'll update these docs to reflect Next.js usage once the migration is complete. -->
+
 A React-based application that loads and manipulates files from a selected directory via the File System Access API. It generates comprehensive prompts by combining user instructions, custom instructions, and file contents, then allows applying XML-based code changes back to the directory.
 
 ## Table of Content

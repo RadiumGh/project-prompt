@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+// TODO: Next rewriting plan: Possibly move MR linking logic to a Next server route or keep client side. We'll finalize approach.
 import { persist } from 'zustand/middleware'
 
 interface MergeRequestStoreState {

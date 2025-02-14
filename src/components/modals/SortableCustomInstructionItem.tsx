@@ -4,6 +4,7 @@
 // </ai_context>
 
 import React from 'react'
+// TODO: Next rewriting plan: We'll see if DnD can remain purely client side in Next or we handle server updates for order.
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { IconButton, ListItem, Box } from '@mui/material'

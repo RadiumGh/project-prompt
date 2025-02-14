@@ -4,6 +4,7 @@
 // </ai_context>
 
 import { useEffect, useState } from 'react'
+// TODO: Next rewriting plan: We might implement instructions with Next's dynamic or server actions. Keep old approach for now.
 import {
   TextField,
   Box,

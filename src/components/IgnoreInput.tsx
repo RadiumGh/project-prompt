@@ -3,6 +3,7 @@
 // </ai_context>
 
 import React from 'react'
+// TODO: Next rewriting plan: Possibly integrate server-based ignore patterns. Keep old client logic for reference.
 import { TextField } from '@mui/material'
 import { useFileStore } from '../store/fileStore'
 

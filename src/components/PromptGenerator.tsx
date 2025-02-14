@@ -5,6 +5,7 @@
 // </ai_context>
 
 import { useState } from 'react'
+// TODO: Next rewriting plan: Possibly generate final prompt on server side (for token counting) or keep client approach.
 import { TextField, Typography, Box, Button } from '@mui/material'
 import { useInstructionsStore } from '../store/instructionsStore'
 import { useFileStore } from '../store/fileStore'

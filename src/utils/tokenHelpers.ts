@@ -1,5 +1,6 @@
 
 // <ai_context>
+// TODO: Next rewriting plan: Move or replicate this token counting on server for stable counts. Keep for client fallback.
 //  Utility helpers for token counting, etc.
 //  Updated to produce an estimate using js-tiktoken to better approximate the OpenAI tokenizer.
 // </ai_context>

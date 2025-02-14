@@ -4,6 +4,7 @@
 // </ai_context>
 
 import React from 'react'
+// TODO: Next rewriting plan: We'll keep MUI-based snackbars or create a new pattern in Next. SSR might not need it, but we can keep client usage.
 import { Snackbar, Alert } from '@mui/material'
 import { useToastStore } from '../store/toastStore'
 

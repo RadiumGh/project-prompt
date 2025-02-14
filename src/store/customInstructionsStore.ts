@@ -1,5 +1,6 @@
 
 // <ai_context>
+// TODO: Next rewriting plan: We may keep Zustand store for client side or switch to Next server actions for storing instructions.
 //  Manages the list of custom instructions, each with its own ID, name, content, and isActive.
 // </ai_context>
 

@@ -6,6 +6,7 @@
 // </ai_context>
 
 import { useState } from 'react'
+// TODO: Next rewriting plan: Possibly a client component in Next, or integrated with server actions for custom instructions.
 import { Box, Tooltip, Typography, IconButton, Paper, Stack } from '@mui/material'
 import SettingsIcon from '@mui/icons-material/Settings'
 import { useCustomInstructionsStore } from '../store/customInstructionsStore'
