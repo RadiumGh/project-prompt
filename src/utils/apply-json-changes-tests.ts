@@ -1,6 +1,9 @@
 /**
  * File: tests/apply-json-changes-bdd-tests.ts
  *
+ * TODO: [Subtask7] We plan to unify or remove these browser-based BDD tests in favor of Node-based logic.
+ * Retain them temporarily for any fallback or legacy usage.
+ *
  * These tests exercise the BDD Scenarios defined in the provided Gherkin file
  * against the `applyJsonChanges` function using the Web FileSystem API in a browser
  * environment. They will run in a "test" directory under the provided `rootDirHandle`

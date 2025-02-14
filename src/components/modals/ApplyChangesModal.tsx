@@ -77,7 +77,7 @@ export default function ApplyChangesModal({ open, onClose }: Props) {
   }
 
   const handleApply = async () => {
-    // TODO: fallback to applyJsonChanges(...) if we want offline usage
+// TODO: [Subtask7] fallback remains. We keep old code for potential offline usage; unify or remove once Node approach matures.
     setIsApplying(true)
 
     try {

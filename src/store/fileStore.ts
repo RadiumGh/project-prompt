@@ -124,12 +124,14 @@ export const useFileStore = create<FileStoreState>()(
       },
 
       async openDirectory() {
-        if (!window.showDirectoryPicker) {
-          alert('File System Access API is not supported in this browser.')
+// TODO: [Subtask7] We keep old browser FS approach for now. Marked for future removal/unification with Node-based flows.
+if (!window.showDirectoryPicker) {
+  alert('File System Access API is not supported in this browser.')
           return
         }
         try {
-          const dirHandle = await window.showDirectoryPicker()
+// TODO: [Subtask7] Retain this usage until the Node-based approach fully replaces it.
+const dirHandle = await window.showDirectoryPicker()
           const tree = await buildFileTree(dirHandle)
 
           const pPaths = get().persistedSelectedFilePaths
