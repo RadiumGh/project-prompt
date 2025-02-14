@@ -19,8 +19,10 @@ import CloseIcon from '@mui/icons-material/Close'
 import { styled } from '@mui/material/styles'
 import { useFileStore } from '../../store/fileStore'
 import { useToastStore } from '../../store/toastStore'
-import { applyJsonChanges } from '../../utils/apply-json-changes.ts'
-import { runApplyJsonChangesBDDTests } from '../../utils/apply-json-changes-tests.ts'
+// TODO: Possibly remove or re-enable the local browser-based approach if offline usage is needed
+// import { applyJsonChanges } from '../../utils/apply-json-changes.ts'
+// import { runApplyJsonChangesBDDTests } from '../../utils/apply-json-changes-tests.ts'
+import axios from 'axios'
 
 interface Props {
   open: boolean
@@ -74,16 +76,18 @@ export default function ApplyChangesModal({ open, onClose }: Props) {
   }
 
   const handleApply = async () => {
-    if (!lastDirHandle) {
-      showErrorToast('No directory open.')
-      return
-    }
+    // TODO: fallback to applyJsonChanges(...) if we want offline usage
     setIsApplying(true)
 
     try {
-      await applyJsonChanges(JSON.parse(jsonText), lastDirHandle)
-      showSuccessToast('All changes applied successfully!')
-      onClose()
+      const response = await axios.post('/api/apply-json-changes', JSON.parse(jsonText))
+      if (response.status === 200 && response.data?.status === 'ok') {
+        showSuccessToast('All changes applied successfully!')
+        onClose()
+      } else {
+        console.error('Error applying changes:', response.data)
+        showErrorToast('Error applying changes!')
+      }
     } catch (error) {
       console.error('Error applying changes:', error)
       showErrorToast('Error applying changes!')
@@ -93,6 +97,7 @@ export default function ApplyChangesModal({ open, onClose }: Props) {
   }
 
   const handleRunTests = async () => {
+    // TODO: Convert runApplyJsonChangesBDDTests for Node usage or remove entirely
     if (!lastDirHandle) {
       showErrorToast('No directory open.')
       return
@@ -100,6 +105,7 @@ export default function ApplyChangesModal({ open, onClose }: Props) {
 
     setIsRunningTests(true)
     try {
+      // Keeping the old approach for now, but we might remove or rewrite soon.
       await runApplyJsonChangesBDDTests(lastDirHandle)
       showSuccessToast(
         'All tests run successfully!, Check console for more information',
