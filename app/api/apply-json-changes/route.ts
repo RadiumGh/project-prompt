@@ -1,12 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-
-// Big TODO referencing old 'apply-json-changes.ts' from src/utils.
-// We will unify or adapt that logic in 'server-utils/applyJsonChangesNode.ts'.
-// Minimal error handling for now: if anything fails, respond with 400 or 500.
-// Further improvements (auth, path checks, logs) will come in future subtasks.
-
 import { applyJsonChangesNode } from '../../../../server-utils/applyJsonChangesNode';
 
+/**
+ * POST /api/apply-json-changes
+ * Accepts a JSON body containing the structure defined in ChangesJson, and applies those changes
+ * in the local filesystem using Node fs/promises.
+ */
 export async function POST(req: NextRequest) {
   try {
     // Attempt to parse JSON body
@@ -14,13 +13,14 @@ export async function POST(req: NextRequest) {
 
     // Basic validation: 'changes' must be an array
     if (!data || !Array.isArray(data.changes)) {
-      return NextResponse.json({
-        error: "Invalid changes JSON format. 'changes' array is required."
-      }, { status: 400 });
+      return NextResponse.json(
+        { error: "Invalid changes JSON format. 'changes' array is required." },
+        { status: 400 }
+      );
     }
 
-    // For now, we just call our Node placeholder utility
-    // We'll assume a safe root is the local process.cwd(). TODO: refine in future steps
+    // We use process.cwd() as a base directory, but we keep a TODO for path sanitization checks.
+    // In a future subtask, we might validate user credentials, etc.
     await applyJsonChangesNode(data, process.cwd());
 
     // Return success
