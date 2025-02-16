@@ -28,8 +28,8 @@
     "zustand": "^4.3.9"
   },
   "devDependencies": {
+    "@types/node": "latest",
     "prettier": "^3.4.2",
-    "typescript": "latest",
-    "@types/node": "latest"
+    "typescript": "^5.7.3"
   }
 }

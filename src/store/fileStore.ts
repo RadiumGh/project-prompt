@@ -1,6 +1,5 @@
 // <ai_context>
-// Primary store for file/directory handling.
-// We have removed all browser-based FS references in this subtask.
+// Primary store for file/directory handling, fully Node-based now.
 // </ai_context>
 
 import { create } from 'zustand';
@@ -11,7 +10,7 @@ import { isIgnored } from '../utils/ignoreHelpers';
 interface FileNode {
   name: string;
   path: string;
-  handle: any; // No longer used for browser FS
+  handle?: any; // We no longer use this, leaving optional for typed compliance
   isDirectory: boolean;
   selected: boolean;
   children?: FileNode[];
@@ -24,25 +23,21 @@ export interface LoadedFile {
 }
 
 interface FileStoreState {
-  // Kept from the old structure, but some fields are effectively no-ops now.
   fileTree: FileNode[];
   selectedFiles: FileNode[];
   loadedFiles: LoadedFile[];
   ignorePatterns: string;
-  lastOpenedDirectoryPath: string | null;
+  lastOpenedDirectoryPath: string | null; // Optional leftover reference, but not used for logic now
   persistedSelectedFilePaths: string[];
-  includeTreeInPrompt: boolean,
+  includeTreeInPrompt: boolean;
 
-  // No more direct directory handle usage
-  // lastDirHandle: FileSystemDirectoryHandle | null,
-  lastDirHandle: null,
-
-  // Actions
   setIgnorePatterns: (value: string) => void;
   setIncludeTreeInPrompt: (val: boolean) => void;
 
-  // We remove the openDirectory/refreshDirectory methods that used browser FS.
+  // Directory fetching from server
+  fetchDirectoryFromServer: () => Promise<void>;
 
+  // Selections and loading
   toggleSelection: (path: string, handle: any, isDirectory: boolean) => void;
   clearSelection: () => void;
   loadSelectedFiles: () => Promise<void>;
@@ -60,7 +55,6 @@ export const useFileStore = create<FileStoreState>()(
       lastOpenedDirectoryPath: null,
       persistedSelectedFilePaths: [],
       includeTreeInPrompt: false,
-      lastDirHandle: null,
 
       setIgnorePatterns(value) {
         set({ ignorePatterns: value });
@@ -70,7 +64,33 @@ export const useFileStore = create<FileStoreState>()(
         set({ includeTreeInPrompt: val });
       },
 
-      // toggleSelection is now a local operation, with no actual FS handle usage.
+      // New method to fetch the directory from server
+      async fetchDirectoryFromServer() {
+        try {
+          const resp = await fetch('/api/list-directory');
+          if (!resp.ok) {
+            console.error('Failed to fetch directory from server:', resp.statusText);
+            return;
+          }
+          const data = await resp.json();
+          const tree = data.tree || [];
+          // Convert the fetched data into our FileNode structure with default selected=false
+          const parseNodes = (nodes: any[]): FileNode[] => {
+            return nodes.map(n => ({
+              name: n.name,
+              path: n.path,
+              isDirectory: n.isDirectory,
+              selected: false,
+              children: n.isDirectory && n.children ? parseNodes(n.children) : [],
+            }));
+          };
+          const newTree = parseNodes(tree);
+          set({ fileTree: newTree, selectedFiles: [] });
+        } catch (err) {
+          console.error('Error fetching directory from server:', err);
+        }
+      },
+
       toggleSelection(path, handle, isDirectory) {
         const { fileTree, persistedSelectedFilePaths } = get();
 
@@ -116,7 +136,6 @@ export const useFileStore = create<FileStoreState>()(
                 newPersisted.splice(idx, 1);
               }
             }
-
             if (n.isDirectory && n.children?.length) {
               n.children = toggleChildren(n.children, newVal, newPersisted);
             }
@@ -164,16 +183,41 @@ export const useFileStore = create<FileStoreState>()(
       },
 
       async loadSelectedFiles() {
-        // This is now a no-op or pseudo-op for now, since we removed direct FS usage.
-        // In future subtasks, we will fetch file contents from a Node-based route.
-
         const { selectedFiles, ignorePatterns } = get();
         const ignoreLines = ignorePatterns.split('\n');
-        const loadedFiles: LoadedFile[] = [];
+        const validPaths = selectedFiles
+          .filter(f => !isIgnored(f.path, ignoreLines) && !f.isDirectory)
+          .map(f => f.path);
 
-        // Nothing to do here yet, but we keep this function so the UI doesn’t break.
+        if (!validPaths.length) {
+          set({ loadedFiles: [] });
+          return;
+        }
 
-        set({ loadedFiles });
+        try {
+          const resp = await fetch('/api/get-file-contents', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ paths: validPaths })
+          });
+          if (!resp.ok) {
+            console.error('Failed to load file contents from server.');
+            return;
+          }
+          const data = await resp.json();
+          const serverFiles = data.files || [];
+
+          const loadedFiles: LoadedFile[] = serverFiles.map((f: any) => ({
+            path: f.path,
+            content: f.content,
+            tokenCount: approximateTokens(f.content)
+          }));
+
+          set({ loadedFiles });
+        } catch (err) {
+          console.error('Error loading file contents from server:', err);
+          set({ loadedFiles: [] });
+        }
       },
 
       addAttachmentFile(path: string, content: string) {
@@ -191,15 +235,14 @@ export const useFileStore = create<FileStoreState>()(
     {
       name: 'file-store',
       partialize: state => ({
-        // We still store the fileTree, but handles are no longer relevant.
-        fileTree: state.fileTree.map(n => ({ ...n, handle: null })),
+        fileTree: state.fileTree.map(n => ({ ...n, handle: null })), // handle is unused now
         selectedFiles: state.selectedFiles.map(n => ({ ...n, handle: null })),
         loadedFiles: state.loadedFiles,
         ignorePatterns: state.ignorePatterns,
-        lastOpenedDirectoryPath: state.lastOpenedDirectoryPath,
+        lastOpenedDirectoryPath: state.lastOpenedDirectoryPath, // kept as reference only
         persistedSelectedFilePaths: state.persistedSelectedFilePaths,
         includeTreeInPrompt: state.includeTreeInPrompt,
-      }),
+      })
     }
-  ),
+  )
 );
