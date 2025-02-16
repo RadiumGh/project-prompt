@@ -53,7 +53,9 @@ export default function App() {
 
 // We no longer refresh directory from the client side.
 
-// The old handleOpenDirectory no longer exists.
+const handleLoadFromServer = () => {
+  // fetchServerDirectory();
+}
 
   const handleClearSelection = () => {
     clearSelection()
@@ -174,11 +176,11 @@ export default function App() {
 
           {/* Tree content (fills remaining space) */}
           <Box sx={{ flex: 1, position: 'relative', overflowY: 'auto', p: 1 }}>
-            {fileTree.length === 0 ? (
-              <Typography variant="body2">No directory opened yet.</Typography>
-            ) : (
-              <DirectoryTree />
-            )}
+{fileTree.length === 0 ? (
+  <Typography variant="body2">No directory data loaded from server yet.</Typography>
+) : (
+  <DirectoryTree />
+)}
             {/* Dark overlay if no directory handle */}
             {!lastDirHandle && (
               <Box
