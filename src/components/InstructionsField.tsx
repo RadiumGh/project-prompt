@@ -1,11 +1,5 @@
 "use client"
-// <ai_context>
-//  A text area for the user's instructions that will be appended to the final prompt.
-//  Includes a "Copy Prompt" button at the bottom to copy the entire prompt content.
-// </ai_context>
-
 import { useEffect, useState } from 'react'
-// TODO: Next rewriting plan: We might implement instructions with Next's dynamic or server actions. Keep old approach for now.
 import {
   TextField,
   Box,
@@ -32,68 +26,68 @@ export default function InstructionsField() {
     setInstructions,
     getFinalPrompt,
     getFinalPromptTokens,
-  } = useInstructionsStore()
+  } = useInstructionsStore();
 
-  const [attachModalOpen, setAttachModalOpen] = useState(false)
+  const [attachModalOpen, setAttachModalOpen] = useState(false);
 
   const { includeTreeInPrompt, setIncludeTreeInPrompt, loadedFiles } =
-    useFileStore()
-  const { showSuccessToast } = useToastStore()
+    useFileStore();
+  const { showSuccessToast } = useToastStore();
 
-  const [localInstructions, setLocalInstructions] = useState(instructions)
+  const [localInstructions, setLocalInstructions] = useState(instructions);
 
-  const { customInstructions } = useCustomInstructionsStore()
+  const { customInstructions } = useCustomInstructionsStore();
 
-  const activeCustoms = customInstructions.filter(ci => ci.isActive)
+  const activeCustoms = customInstructions.filter(ci => ci.isActive);
 
   useEffect(() => {
-    setLocalInstructions(instructions)
-  }, [instructions])
+    setLocalInstructions(instructions);
+  }, [instructions]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       if (localInstructions !== instructions) {
-        setInstructions(localInstructions)
+        setInstructions(localInstructions);
       }
-    }, 500)
-    return () => clearTimeout(timer)
-  }, [localInstructions, instructions, setInstructions])
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [localInstructions, instructions, setInstructions]);
 
-  const [showPromptModal, setShowPromptModal] = useState(false)
+  const [showPromptModal, setShowPromptModal] = useState(false);
   const handleOpenModal = () => {
     if (localInstructions !== instructions) {
-      setInstructions(localInstructions)
+      setInstructions(localInstructions);
     }
-    setShowPromptModal(true)
-  }
-  const handleCloseModal = () => setShowPromptModal(false)
+    setShowPromptModal(true);
+  };
+  const handleCloseModal = () => setShowPromptModal(false);
 
   const handleCloseAttachModal = () => {
-    setAttachModalOpen(false)
-  }
+    setAttachModalOpen(false);
+  };
 
   const handleCopyPrompt = async () => {
     if (localInstructions !== instructions) {
-      setInstructions(localInstructions)
+      setInstructions(localInstructions);
     }
     const prompt = getFinalPrompt(
       loadedFiles,
       activeCustoms,
       includeTreeInPrompt,
-    )
+    );
     const tokenCount = getFinalPromptTokens(
       loadedFiles,
       activeCustoms,
       includeTreeInPrompt,
-    )
+    );
 
     try {
-      await navigator.clipboard.writeText(prompt)
-      showSuccessToast(`Copied prompt! ${formatTokenCount(tokenCount)} tokens`)
+      await navigator.clipboard.writeText(prompt);
+      showSuccessToast(`Copied prompt! ${formatTokenCount(tokenCount)} tokens`);
     } catch (err) {
-      console.error('Failed to copy prompt:', err)
+      console.error('Failed to copy prompt:', err);
     }
-  }
+  };
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mb: 1 }}>
@@ -154,5 +148,5 @@ export default function InstructionsField() {
         onClose={handleCloseAttachModal}
       />
     </Box>
-  )
+  );
 }

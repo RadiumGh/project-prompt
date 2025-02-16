@@ -4,7 +4,6 @@
 //  but omitting FileSystemDirectoryHandle (cannot be serialized).
 // </ai_context>
 
-// TODO: Next rewriting plan: Evaluate reading directory with Node server route vs. client FS Access. Possibly remove local approach.
 
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
@@ -124,7 +123,6 @@ export const useFileStore = create<FileStoreState>()(
       },
 
       async openDirectory() {
-// TODO: [Subtask7] We keep old browser FS approach for now. Marked for future removal/unification with Node-based flows.
 if (!window.showDirectoryPicker) {
   alert('File System Access API is not supported in this browser.')
           return

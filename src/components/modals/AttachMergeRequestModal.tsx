@@ -1,6 +1,5 @@
 "use client"
 import axios from 'axios'
-// TODO: Next rewriting plan: Possibly move fetch logic to Next server route or keep axios calls on client if needed.
 import { useState } from 'react'
 import {
   Box,
@@ -26,7 +25,7 @@ const StyledDialogTitle = styled(DialogTitle)(() => ({
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'center',
-}))
+}));
 
 export default function AttachMergeRequestModal({
   open,
@@ -43,20 +42,20 @@ export default function AttachMergeRequestModal({
     setApiUrl,
     setIgnorePatterns,
     setProjectId,
-  } = useMergeRequestStore()
+  } = useMergeRequestStore();
 
-  const { showErrorToast } = useToastStore()
+  const { showErrorToast } = useToastStore();
 
-  const [isFetching, setIsFetching] = useState(false)
-  const addAttachmentFile = useFileStore(state => state.addAttachmentFile)
+  const [isFetching, setIsFetching] = useState(false);
+  const addAttachmentFile = useFileStore(state => state.addAttachmentFile);
 
   const handleClose = () => {
-    onClose()
-  }
+    onClose();
+  };
 
   const handleSubmit = async () => {
-    if (!mergeRequestLink || !apiToken) return
-    setIsFetching(true)
+    if (!mergeRequestLink || !apiToken) return;
+    setIsFetching(true);
 
     try {
       const payload = {
@@ -64,26 +63,26 @@ export default function AttachMergeRequestModal({
         accessToken: apiToken,
         projectId,
         ignorePatterns: ignorePatterns?.split('\n') ?? [],
-      }
+      };
 
-      const response = await axios.post(`${apiUrl}/review`, payload)
-      const data = response.data as { context: string; diff: any[] } | null
+      const response = await axios.post(`${apiUrl}/review`, payload);
+      const data = response.data as { context: string; diff: any[] } | null;
 
       if (data) {
-        const { context, diff } = data
+        const { context, diff } = data;
 
         if (diff)
-          addAttachmentFile('merge-request diff', JSON.stringify(data.diff))
-        if (context) addAttachmentFile('merge-request context', data.context)
+          addAttachmentFile('merge-request diff', JSON.stringify(data.diff));
+        if (context) addAttachmentFile('merge-request context', data.context);
       }
     } catch (err) {
-      console.error('Failed to fetch merge request context:', err)
-      showErrorToast('Fetching merge-request Context Failed!')
+      console.error('Failed to fetch merge request context:', err);
+      showErrorToast('Fetching merge-request Context Failed!');
     } finally {
-      setIsFetching(false)
-      onClose()
+      setIsFetching(false);
+      onClose();
     }
-  }
+  };
 
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
@@ -152,5 +151,5 @@ yarn.lock
         </Box>
       </Box>
     </Dialog>
-  )
+  );
 }

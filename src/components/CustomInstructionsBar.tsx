@@ -1,13 +1,5 @@
-
 "use client"
-// <ai_context>
-//  Displays a horizontally scrollable list of custom instructions (by name).
-//  Placed above the InstructionsField, toggled on click (no width change).
-//  Also includes a tooltip with partial content, and a Settings icon to open the modal.
-// </ai_context>
-
 import { useState } from 'react'
-// TODO: Next rewriting plan: Possibly a client component in Next, or integrated with server actions for custom instructions.
 import { Box, Tooltip, Typography, IconButton, Paper, Stack } from '@mui/material'
 import SettingsIcon from '@mui/icons-material/Settings'
 import { useCustomInstructionsStore } from '../store/customInstructionsStore'
@@ -15,19 +7,19 @@ import CustomInstructionsModal from './modals/CustomInstructionsModal'
 import { approximateTokens, formatTokenCount } from '../utils/tokenHelpers'
 
 export default function CustomInstructionsBar() {
-  const { customInstructions, toggleCustomInstruction } = useCustomInstructionsStore()
-  const [modalOpen, setModalOpen] = useState(false)
+  const { customInstructions, toggleCustomInstruction } = useCustomInstructionsStore();
+  const [modalOpen, setModalOpen] = useState(false);
 
   const handleToggle = (id: string) => {
-    toggleCustomInstruction(id)
-  }
+    toggleCustomInstruction(id);
+  };
 
   const handleOpenModal = () => {
-    setModalOpen(true)
-  }
+    setModalOpen(true);
+  };
   const handleCloseModal = () => {
-    setModalOpen(false)
-  }
+    setModalOpen(false);
+  };
 
   return (
     <Stack
@@ -48,9 +40,9 @@ export default function CustomInstructionsBar() {
       >
         {customInstructions.map(ci => {
           const truncated =
-            ci.content.length > 60 ? ci.content.slice(0, 60) + '...' : ci.content
-          const tokenCount = approximateTokens(ci.content)
-          const label = `${ci.name} (${formatTokenCount(tokenCount)} T)`
+            ci.content.length > 60 ? ci.content.slice(0, 60) + '...' : ci.content;
+          const tokenCount = approximateTokens(ci.content);
+          const label = `${ci.name} (${formatTokenCount(tokenCount)} T)`;
 
           return (
             <Tooltip key={ci.id} title={truncated}>
@@ -78,7 +70,7 @@ export default function CustomInstructionsBar() {
                 </Typography>
               </Paper>
             </Tooltip>
-          )
+          );
         })}
       </Box>
 
@@ -95,5 +87,5 @@ export default function CustomInstructionsBar() {
 
       <CustomInstructionsModal open={modalOpen} onClose={handleCloseModal} />
     </Stack>
-  )
+  );
 }

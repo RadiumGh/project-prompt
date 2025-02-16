@@ -1,18 +1,17 @@
 import { create } from 'zustand'
-// TODO: Next rewriting plan: Possibly move MR linking logic to a Next server route or keep client side. We'll finalize approach.
 import { persist } from 'zustand/middleware'
 
 interface MergeRequestStoreState {
-  apiUrl: string
-  mergeRequestLink: string
-  apiToken: string
-  ignorePatterns: string
-  projectId: string
-  setApiUrl: (val: string) => void
-  setMergeRequestLink: (val: string) => void
-  setApiToken: (val: string) => void
-  setIgnorePatterns: (val: string) => void
-  setProjectId: (val: string) => void
+  apiUrl: string;
+  mergeRequestLink: string;
+  apiToken: string;
+  ignorePatterns: string;
+  projectId: string;
+  setApiUrl: (val: string) => void;
+  setMergeRequestLink: (val: string) => void;
+  setApiToken: (val: string) => void;
+  setIgnorePatterns: (val: string) => void;
+  setProjectId: (val: string) => void;
 }
 
 export const useMergeRequestStore = create<MergeRequestStoreState>()(
@@ -25,23 +24,23 @@ export const useMergeRequestStore = create<MergeRequestStoreState>()(
       projectId: '',
 
       setApiUrl: val => {
-        set({ apiUrl: val })
+        set({ apiUrl: val });
       },
       setMergeRequestLink: val => {
-        set({ mergeRequestLink: val })
+        set({ mergeRequestLink: val });
       },
       setApiToken: val => {
-        set({ apiToken: val })
+        set({ apiToken: val });
       },
       setIgnorePatterns: val => {
-        set({ ignorePatterns: val })
+        set({ ignorePatterns: val });
       },
       setProjectId: val => {
-        set({ projectId: val })
+        set({ projectId: val });
       },
     }),
     {
       name: 'merge-request-store',
     },
   ),
-)
+);

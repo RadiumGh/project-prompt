@@ -1,6 +1,5 @@
 "use client"
 import { useState } from 'react'
-// TODO: Next rewriting plan: Evaluate reading files on Node side vs. client. Keep local approach for now.
 import { Typography, Box, Paper, IconButton } from '@mui/material'
 import { LoadedFile, useFileStore } from '../store/fileStore'
 import { formatTokenCount } from '../utils/tokenHelpers'
@@ -9,29 +8,29 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import Modal from './modals/Modal'
 
 export default function SelectedFilesList() {
-  const { loadedFiles, removeAttachmentFile } = useFileStore()
-  const [viewingFile, setViewingFile] = useState<LoadedFile>()
+  const { loadedFiles, removeAttachmentFile } = useFileStore();
+  const [viewingFile, setViewingFile] = useState<LoadedFile>();
 
   const handleViewFile = (file: LoadedFile) => {
-    setViewingFile(file)
-  }
+    setViewingFile(file);
+  };
 
   const handleDeleteFile = (filePath: string) => {
-    removeAttachmentFile(filePath)
-  }
+    removeAttachmentFile(filePath);
+  };
 
   const handleCloseModal = () => {
-    setViewingFile(undefined)
-  }
+    setViewingFile(undefined);
+  };
 
   if (loadedFiles.length === 0) {
-    return <Typography variant="body2">No files loaded yet.</Typography>
+    return <Typography variant="body2">No files loaded yet.</Typography>;
   }
 
   const totalTokens = loadedFiles.reduce(
     (acc, file) => acc + file.tokenCount,
     0,
-  )
+  );
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
@@ -116,5 +115,5 @@ export default function SelectedFilesList() {
         </Modal>
       )}
     </Box>
-  )
+  );
 }
