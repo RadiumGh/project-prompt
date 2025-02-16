@@ -1,11 +1,5 @@
-"use client"
-// <ai_context>
-//  A modal for applying XML-based code changes to the opened directory.
-//  Contains a text area with example XML structure and a button to apply changes.
-// </ai_context>
-
+'use client'
 import { useState } from 'react'
-// TODO: Next rewriting plan: This will shift from client-side FS API to our new Next.js route (server-side applyJsonChanges).
 import {
   Dialog,
   DialogTitle,
@@ -20,9 +14,6 @@ import CloseIcon from '@mui/icons-material/Close'
 import { styled } from '@mui/material/styles'
 import { useFileStore } from '../../store/fileStore'
 import { useToastStore } from '../../store/toastStore'
-// TODO: Possibly remove or re-enable the local browser-based approach if offline usage is needed
-// import { applyJsonChanges } from '../../utils/apply-json-changes.ts'
-// import { runApplyJsonChangesBDDTests } from '../../utils/apply-json-changes-tests.ts'
 import axios from 'axios'
 
 interface Props {
@@ -70,18 +61,26 @@ export default function ApplyChangesModal({ open, onClose }: Props) {
 
   const [jsonText, setJsonText] = useState('')
   const [isApplying, setIsApplying] = useState(false)
-  const [isRunningTests, setIsRunningTests] = useState(false)
 
   const handleClose = () => {
     onClose()
   }
 
   const handleApply = async () => {
-// TODO: [Subtask7] fallback remains. We keep old code for potential offline usage; unify or remove once Node approach matures.
     setIsApplying(true)
-
     try {
-      const response = await axios.post('/api/apply-json-changes', JSON.parse(jsonText))
+      // All changes are handled by the Next.js server route /api/apply-json-changes
+      const response = await axios.post(
+        '/api/apply-json-changes',
+        JSON.parse(jsonText),
+        {
+          headers: {
+            // Minimal example of sending a Bearer token for our new credential check:
+            Authorization: 'Bearer FAKE-TOKEN',
+          },
+        },
+      )
+
       if (response.status === 200 && response.data?.status === 'ok') {
         showSuccessToast('All changes applied successfully!')
         onClose()
@@ -94,30 +93,6 @@ export default function ApplyChangesModal({ open, onClose }: Props) {
       showErrorToast('Error applying changes!')
     } finally {
       setIsApplying(false)
-    }
-  }
-
-  const handleRunTests = async () => {
-    // TODO: Convert runApplyJsonChangesBDDTests for Node usage or remove entirely
-    if (!lastDirHandle) {
-      showErrorToast('No directory open.')
-      return
-    }
-
-    setIsRunningTests(true)
-    try {
-      // Keeping the old approach for now, but we might remove or rewrite soon.
-      await runApplyJsonChangesBDDTests(lastDirHandle)
-      showSuccessToast(
-        'All tests run successfully!, Check console for more information',
-      )
-
-      onClose()
-    } catch (error) {
-      console.error('Error running tests:', error)
-      showErrorToast('Error running tests!')
-    } finally {
-      setIsRunningTests(false)
     }
   }
 
@@ -154,19 +129,6 @@ export default function ApplyChangesModal({ open, onClose }: Props) {
             gap: 1.5,
           }}
         >
-          <Tooltip title="Run test cases relevant to code changes JSON format; All Changes will be applied into 'test' directory!">
-            <span>
-              <Button
-                variant="outlined"
-                color="primary"
-                onClick={handleRunTests}
-                disabled={isRunningTests || !lastDirHandle}
-              >
-                {isRunningTests ? 'Running...' : 'Run Tests'}
-              </Button>
-            </span>
-          </Tooltip>
-
           <Tooltip title="Apply the changes to your open directory">
             <span>
               <Button

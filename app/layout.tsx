@@ -1,20 +1,20 @@
+import { ReactNode } from 'react'
+
 export const metadata = {
   title: 'Project Prompt Next Migration',
-  description: 'Next.js 13+ layout for the rewriting process'
+  description: 'Next.js 13+ layout for the rewriting process',
 }
 
 import ThemeProviderClient from './ThemeProviderClient'
 
-export default function RootLayout({
-  children
-}: {
-  children: React.ReactNode
-}) {
+// We unify styling and theming with MUI from the server root layout.
+// The client-based theme toggling will be wrapped here to ensure SSR + hydration work properly.
+
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <body>
-        {/* TODO: unify styling and theming with MUI in future subtasks */}
-        {children}
+        <ThemeProviderClient>{children}</ThemeProviderClient>
       </body>
     </html>
   )

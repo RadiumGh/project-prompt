@@ -4,9 +4,16 @@ import { applyJsonChangesNode } from '../../../../server-utils/applyJsonChangesN
 /**
  * POST /api/apply-json-changes
  * Accepts a JSON body containing the structure defined in ChangesJson, and applies those changes
- * in the local filesystem using Node fs/promises.
+ * in the local filesystem using Node fs/promises, with strict path sanitization.
+ * Demonstration-only minimal credential check included for advanced usage.
  */
 export async function POST(req: NextRequest) {
+  // Minimal (example) user credential check - replace with real logic in production:
+  const authorizationHeader = req.headers.get('Authorization');
+  if (!authorizationHeader || authorizationHeader !== 'Bearer FAKE-TOKEN') {
+    return NextResponse.json({ error: 'Unauthorized request' }, { status: 401 });
+  }
+
   try {
     // Attempt to parse JSON body
     const data = await req.json();
@@ -19,14 +26,28 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // We use process.cwd() as a base directory, but we keep a TODO for path sanitization checks.
-    // In a future subtask, we might validate user credentials, etc.
+    // In addition to the path checks in applyJsonChangesNode, we can do a quick scan for suspicious patterns:
+    for (const change of data.changes) {
+      const possiblePaths = [];
+      if (change.path) possiblePaths.push(change.path);
+      if (change.old_path) possiblePaths.push(change.old_path);
+      if (change.new_path) possiblePaths.push(change.new_path);
+
+      for (const p of possiblePaths) {
+        if (p.includes('..') || p.includes(':') || p.includes('\r') || p.includes('\n')) {
+          return NextResponse.json({
+            error: `Suspicious path: ${p}`
+          }, { status: 400 });
+        }
+      }
+    }
+
+    // We use process.cwd() as a base directory. applyJsonChangesNode itself will throw if path escapes baseDir.
     await applyJsonChangesNode(data, process.cwd());
 
     // Return success
     return NextResponse.json({ status: 'ok' });
   } catch (err: any) {
-    // If this was a parse error or something else, we can differentiate if needed
     console.error('Failed to apply JSON changes:', err);
     return NextResponse.json({ error: String(err) }, { status: 500 });
   }
