@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { applyJsonChangesNode } from '../../../../server-utils/applyJsonChangesNode';
+import { applyJsonChangesNode } from '@/server-utils/applyJsonChangesNode';
+
 
 /**
  * POST /api/apply-json-changes

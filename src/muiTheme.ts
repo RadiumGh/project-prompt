@@ -1,15 +1,16 @@
+import { ThemeOptions } from '@mui/material';
 
 // <ai_context>
-// TODO: Next rewriting plan: We'll incorporate or adapt this MUI config in Next’s app/layout or separate provider.
+// TODO: Next rewriting plan: We'll incorporate or adapt this MUI config in Next's app/layout or separate provider.
 //  Defines MUI theme configurations for light and dark modes,
 //  balancing the gold color so it's less eye-catching (slightly darker).
 //  Also removing primary color usage for textfield focus outlines.
 //  Now ensures html,body,#root have height:100% via CssBaseline.
 // </ai_context>
 
-export const lightThemeOptions = {
+export const lightThemeOptions: ThemeOptions = {
   palette: {
-    mode: 'light',
+    mode: 'light' as const,
     primary: {
       main: '#E6C100'
     },
@@ -78,9 +79,9 @@ export const lightThemeOptions = {
   }
 }
 
-export const darkThemeOptions = {
+export const darkThemeOptions: ThemeOptions = {
   palette: {
-    mode: 'dark',
+    mode: 'dark' as const,
     primary: {
       main: '#E6C100'
     },

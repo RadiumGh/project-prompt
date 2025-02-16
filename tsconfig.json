@@ -1,10 +1,13 @@
-
 {
   // Fully migrated to Next.js. Old references removed.
   "compilerOptions": {
     "target": "ES2020",
     "useDefineForClassFields": true,
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "lib": [
+      "ES2020",
+      "DOM",
+      "DOM.Iterable"
+    ],
     "module": "ESNext",
     "skipLibCheck": true,
     "moduleResolution": "bundler",
@@ -13,14 +16,33 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react-jsx",
+    "jsx": "preserve",
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "baseUrl": "src"
+    "baseUrl": ".",
+    "allowJs": true,
+    "incremental": true,
+    "esModuleInterop": true,
+    "paths": {
+      "@/*": ["./*"]
+    },
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
   },
-  "include": ["src"],
-  "references": [{ "path": "./tsconfig.node.json" }],
-  "typeRoots": ["src/types", "node_modules/@types"]
+  "include": [
+    "src",
+    ".next/types/**/*.ts"
+  ],
+  "typeRoots": [
+    "src/types",
+    "node_modules/@types"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }
