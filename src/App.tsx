@@ -16,11 +16,10 @@ import {
   Button,
   Container,
   IconButton,
-  Tooltip,
+  Tooltip
 } from '@mui/material'
 import { styled } from '@mui/material/styles'
 import DownloadIcon from '@mui/icons-material/Download'
-import FolderOpenIcon from '@mui/icons-material/FolderOpen'
 import ClearIcon from '@mui/icons-material/Clear'
 import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt'
 import { useState, useEffect } from 'react'
@@ -52,17 +51,9 @@ export default function App() {
     lastOpenedDirectoryPath,
   } = useFileStore()
 
-  // If we have a handle, refresh on mount
-  useEffect(() => {
-    if (lastDirHandle) {
-      refreshDirectory()
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+// We no longer refresh directory from the client side.
 
-  const handleOpenDirectory = () => {
-    openDirectory()
-  }
+// The old handleOpenDirectory no longer exists.
 
   const handleClearSelection = () => {
     clearSelection()
@@ -105,15 +96,17 @@ export default function App() {
 
           {/* "Apply Changes" button in the AppBar */}
           <Tooltip title="Apply code changes (XML)">
-            <Button
-              variant="outlined"
-              color="primary"
-              startIcon={<SystemUpdateAltIcon />}
-              onClick={openChangesModal}
-              disabled={!lastDirHandle}
-            >
-              Apply Changes
-            </Button>
+            <span>
+              <Button
+                variant="outlined"
+                color="primary"
+                startIcon={<SystemUpdateAltIcon />}
+                onClick={openChangesModal}
+                disabled={!lastDirHandle}
+              >
+                Apply Changes
+              </Button>
+            </span>
           </Tooltip>
         </Toolbar>
       </AppBar>
@@ -158,16 +151,6 @@ export default function App() {
             </Typography>
 
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Tooltip title="Open directory">
-                <Button
-                  size="small"
-                  color="inherit"
-                  startIcon={<FolderOpenIcon />}
-                  onClick={handleOpenDirectory}
-                >
-                  Open
-                </Button>
-              </Tooltip>
               <Tooltip title="Clear selection">
                 <IconButton
                   size="small"
@@ -183,9 +166,9 @@ export default function App() {
           {/* If we don't have a directory handle, but do have lastOpenedDirectoryPath, show "Reopen last folder" */}
           {!lastDirHandle && lastOpenedDirectoryPath && (
             <Box sx={{ p: 1 }}>
-              <Button variant="outlined" onClick={handleOpenDirectory}>
-                (!)&nbsp;Reopen last folder: {lastOpenedDirectoryPath}
-              </Button>
+{/* <!-- Removed old Reopen last folder approach. Node-based flow will come in Subtask 2. --> */}
+              {/* <Button variant="outlined" onClick={handleOpenDirectory}>
+              </Button> */}
             </Box>
           )}
 
