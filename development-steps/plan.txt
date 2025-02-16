@@ -1,0 +1,179 @@
+## **Subtask 1**: Unify the Main Entry at “/” and Validate Routing
+
+### 1. Questions or Clarifications
+1. Should we remove or repurpose `app/prompt/page.tsx` (which is somewhat overlapping with `app/page.tsx`) to avoid confusion?  
+2. Are we certain that all the features found in `App.tsx`—like file loading, directory tree, JSON changes—must appear **only** at the root route (`/`), or do we still need a separate `/prompt` route for demonstration?
+
+### 2. Relevant Experts
+- **Modular & Maintainable Architecture Expert** – to ensure a clean, well-structured Next.js layout without duplication.
+- **React Ecosystem Expert** – to confirm the best approach for merging any overlapping pages.
+- **Professional UI & UX Designer** – to confirm that the user flow remains consistent at `/`.
+
+### 3. Dialogue
+
+```
+## Subtask1
+- We will confirm that “HomePage” in `app/page.tsx` directly imports and renders `App.tsx`.
+- We will review if `app/prompt/page.tsx` duplicates any features. If it does, we either remove that page or clearly separate its purpose (e.g., a minimal demo).
+- Architecture Expert: "We should keep a single, definitive entry point for the user’s main flow. A second route is fine only if we have a real separate functionality to show."
+- React Expert: "Yes, the recommended Next 13 approach is to keep each route minimal. The entire UI can live in `App.tsx`, invoked from `app/page.tsx`. This is consistent with best practices."
+- UI/UX Designer: "Ensure the user only has to navigate to `/` for the full experience. Avoid confusing duplicates."
+- expert review: "Approved plan to unify everything at `/`."
+```
+
+### 4. Implementation Guidelines
+1. **Set `/` as the main route**:  
+   - In `app/page.tsx`, confirm we are returning `<App />` from `src/App.tsx` exactly once.  
+   - If `app/prompt/page.tsx` is purely duplicative, remove or repurpose it (depending on your clarifications).
+2. **Do not break any existing features**:  
+   - Maintain the entire “tree view + loaded files + instructions + apply changes” flow in `App.tsx`.
+3. **No code generation yet**:  
+   - Only plan the changes. When it’s time to implement, you’ll use this subtask’s prompt.
+
+---
+
+## **Subtask 1A**: Testing & Reviewing Subtask 1
+
+### 1. Questions or Clarifications
+- Does any part of the code rely on `app/prompt/page.tsx` for test references or demos that we must preserve?
+- Are there environment or integration tests that specifically point to `/prompt`?
+
+### 2. Relevant Experts
+- **Testing & Quality Assurance Specialist** – to ensure no regressions.
+- **Bug Hunter & Code Review Expert** – to carefully review the new route consolidation.
+- **Project Manager / Agile Coach** – to confirm the acceptance criteria for this slice.
+
+### 3. Dialogue
+
+```
+## Subtask1A
+- QA Specialist: "Test that `/` now includes all the UI elements and functionalities. We'll also check if `PromptPage` is still needed."
+- Bug Hunter: "Perform a code review ensuring references to `prompt/page.tsx` or route-based logic won't break. Confirm no linking issues."
+- PM: "If the user stories say everything must be available at `/`, we can remove or hide the separate /prompt route unless it's truly needed."
+- expert review: "Proceed with regression checks. Ensure no missing references. Approve once no 404 or duplication occurs."
+```
+
+### 4. Implementation Guidelines
+- **Functional Testing**:  
+  - Launch the dev server, visit `/`, verify the directory tree can open files, you can attach them, and the “Apply Changes” flow is present.
+  - Confirm there’s no leftover link or redirect to `/prompt` that breaks the app.
+- **Code Review**:  
+  - Check for references in documentation or comments pointing to `/prompt`.
+  - If removed, ensure no `import` paths break.
+
+---
+
+## **Subtask 2**: Remove or Merge `app/prompt/page.tsx` Cleanly
+
+> _(Only if the decision from Subtask 1 is to remove or unify it. If you choose to keep `/prompt` for a separate use case, adjust accordingly.)_
+
+### 1. Questions or Clarifications
+1. If we remove `app/prompt/page.tsx`, do we still want to keep the minimal example logic for reference? Possibly in a “demo” folder or `development-steps`?
+2. Should we migrate any unique code from `PromptPage` (like the instructions bar or modals) into `App.tsx` if they differ?
+
+### 2. Relevant Experts
+- **Modular & Maintainable Architecture Expert** – to confirm the best location for leftover code from `prompt/page.tsx`.
+- **Documentation Writer** – to remove or update references in `README` or doc files about a separate `prompt` route.
+
+### 3. Dialogue
+
+```
+## Subtask2
+- We analyze the differences between `prompt/page.tsx` and the main `App.tsx`.
+- If features are duplicated, we remove that file to reduce confusion.
+- If `prompt/page.tsx` has unique logic, merge it into the main app or place it behind a separate route if truly required.
+- The Architecture Expert suggests a single route for minimal complexity.
+- The Documentation Writer states that references to /prompt must be removed from README or replaced with instructions about / only.
+- expert review: "All good. Let's proceed with unification or removal."
+```
+
+### 4. Implementation Guidelines
+1. **Remove or rename** `prompt/page.tsx` if it’s not needed; otherwise, unify its unique code with `app/page.tsx`.
+2. **Update documentation** to reflect that all core functionalities exist at `/`.
+3. **Keep the same UI**. Do not drop or alter features inadvertently.
+
+---
+
+## **Subtask 2A**: Testing & Reviewing Subtask 2
+
+### 1. Questions or Clarifications
+- Do we have any external references (e.g., tutorials, internal wiki) pointing to `/prompt` that must be updated or handled?
+
+### 2. Relevant Experts
+- **Testing & Quality Assurance Specialist** – final check that removing or merging `prompt/page.tsx` doesn’t break the build or cause 404 errors.
+- **Bug Hunter & Code Review Expert** – verify the code removal or merging was done carefully, no leftover imports remain.
+- **Documentation Writer** – re-check that the docs are consistent.
+
+### 3. Dialogue
+
+```
+## Subtask2A
+- QA Specialist: "We retest the entire UI on `/`, ensuring all functionalities remain intact. We'll do a quick e2e test as well."
+- Bug Hunter: "Code review for any references to `/prompt`. Confirm the code compiles successfully after the removal or merge."
+- Documentation Writer: "We confirm the README and dev-steps mention only `/` route or clarify if a separate route remains. No dead links."
+- expert review: "All pass, so Subtask 2 is completed."
+```
+
+### 4. Implementation Guidelines
+- Perform manual or automated tests again.  
+- Check the Next.js build logs for warnings about missing pages or routes.
+
+---
+
+## **Subtask 3**: Finalize Project Structure & Best Practices
+
+### 1. Questions or Clarifications
+1. Do we need additional reorganization of directories now that the `/prompt` route is removed or merged?
+2. Are there leftover, unused placeholders in `development-steps`, or do we keep them for historical reference?
+
+### 2. Relevant Experts
+- **Modular & Maintainable Architecture Expert** – to ensure that the final Next.js 13 structure is clean and consistent.
+- **Code Quality & Linting Standard Enforcer** – to confirm no lint errors or style issues remain.
+
+### 3. Dialogue
+
+```
+## Subtask3
+- We do a final pass over the file structure, ensuring that everything is consistent for Next.js best practices:
+   - `app/` for routes
+   - `server-utils/` for Node-based logic
+   - `src/` for shared React components, stores, utilities
+- The Architecture Expert: "Consider whether `development-steps/` is archived or left in place. It's fine to keep for historical record."
+- The Linting Standard Enforcer: "Make sure `eslint` and `prettier` run without warnings, and the code matches the set rules."
+- expert review: "Approved plan. We'll do a final housekeeping round."
+```
+
+### 4. Implementation Guidelines
+1. **Remove any leftover placeholders**:  
+   - If there are any “TODO: Next rewriting plan” references that are now outdated, clear them or mark them as completed.
+2. **Validate directory structure**:  
+   - Confirm that `app/layout.tsx`, `app/page.tsx` are the correct Next 13 entry points.
+   - `server-utils` is used for node-based logic (like `applyJsonChangesNode.ts`).
+3. **Check lint & build**:  
+   - Ensure `npm run dev` and `npm run build` pass with no errors.
+
+---
+
+## **Subtask 3A**: Testing & Reviewing Subtask 3
+
+### 1. Questions or Clarifications
+- Have we addressed all final doc references or leftover comments that might confuse new developers?
+
+### 2. Relevant Experts
+- **Testing & Quality Assurance Specialist** – to run a final “all features” test pass.
+- **Documentation Writer** – to confirm that `README.md` and any step-by-step guides reflect the final structure at `/`.
+- **Performance Optimization Engineer** – a quick check that no newly introduced overhead appears.
+
+### 3. Dialogue
+
+```
+## Subtask3A
+- QA Specialist: "We run the final test suite, confirm the UI works end-to-end, including JSON changes on server side."
+- Documentation Writer: "We finalize the README and any references to old routes or partial duplication."
+- Performance Engineer: "We confirm no performance regression from removing or unifying pages. All good."
+- expert review: "All tasks completed successfully. The user can now do everything from `/`, no duplication remains."
+```
+
+### 4. Implementation Guidelines
+- **Regression testing**: Ensure that all main flows (open directory, attach files, apply JSON changes) remain functional.
+- **Docs & demos**: Confirm that development-steps are either archived or remain as references.
