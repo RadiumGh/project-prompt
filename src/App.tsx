@@ -1,11 +1,3 @@
-/*
-// <ai_context>
-//  Main application component, using MUI for layout.
-//  Node-based directory listing integration complete.
-//  We fetch the directory from the server on mount.
-//  We removed references to lastDirHandle, openDirectory, refreshDirectory, etc.
-// */
-
 import {
   AppBar,
   Toolbar,
@@ -20,6 +12,7 @@ import { styled } from '@mui/material/styles'
 import DownloadIcon from '@mui/icons-material/Download'
 import ClearIcon from '@mui/icons-material/Clear'
 import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt'
+import RefreshIcon from '@mui/icons-material/Refresh'
 import { useState, useEffect } from 'react'
 import { useFileStore } from './store/fileStore'
 import DirectoryTree from './components/DirectoryTree'
@@ -48,7 +41,6 @@ export default function App() {
   } = useFileStore()
 
   useEffect(() => {
-    // On mount, fetch the directory structure from server
     fetchDirectoryFromServer()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -71,7 +63,6 @@ export default function App() {
 
   return (
     <Wrapper maxWidth={false} disableGutters>
-      {/* Top AppBar */}
       <AppBar
         position="static"
         elevation={0}
@@ -92,7 +83,7 @@ export default function App() {
           <Button variant="text" onClick={openPromptStoreModal} color="inherit">
             Prompt Store
           </Button>
-          <Tooltip title="Apply code changes (XML)">
+          <Tooltip title="Apply code changes">
             <span>
               <Button
                 variant="outlined"
@@ -107,7 +98,6 @@ export default function App() {
         </Toolbar>
       </AppBar>
 
-      {/* Main content area */}
       <Box
         sx={{
           display: 'flex',
@@ -118,7 +108,6 @@ export default function App() {
           overflow: 'auto',
         }}
       >
-        {/* Left Pane (Directory Tree) */}
         <Box
           sx={{
             flex: 1,
@@ -130,7 +119,6 @@ export default function App() {
             overflow: 'hidden',
           }}
         >
-          {/* Directory Structure header (Clear) */}
           <Box
             sx={{
               display: 'flex',
@@ -145,7 +133,6 @@ export default function App() {
             <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
               Project Directory
             </Typography>
-
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <Tooltip title="Clear selection">
                 <IconButton
@@ -156,10 +143,18 @@ export default function App() {
                   <ClearIcon />
                 </IconButton>
               </Tooltip>
+              <Tooltip title="Refresh directory">
+                <IconButton
+                  size="small"
+                  color="inherit"
+                  onClick={() => fetchDirectoryFromServer()}
+                >
+                  <RefreshIcon />
+                </IconButton>
+              </Tooltip>
             </Box>
           </Box>
 
-          {/* Tree content */}
           <Box sx={{ flex: 1, position: 'relative', overflowY: 'auto', p: 1 }}>
             {fileTree.length === 0 ? (
               <Typography variant="body2">
@@ -170,7 +165,6 @@ export default function App() {
             )}
           </Box>
 
-          {/* Bottom: Ignore Patterns + Load Button */}
           <Box
             sx={{
               borderTop: 1,
@@ -193,7 +187,6 @@ export default function App() {
           </Box>
         </Box>
 
-        {/* Right Pane */}
         <Box
           sx={{
             flex: 2,
@@ -207,15 +200,12 @@ export default function App() {
             overflow: 'hidden',
           }}
         >
-          {/* Custom Instructions Bar */}
           <CustomInstructionsBar />
 
-          {/* Instructions */}
           <Box>
             <InstructionsField />
           </Box>
 
-          {/* Loaded Files (scrollable) */}
           <Box
             sx={{
               flex: 1,
@@ -232,16 +222,13 @@ export default function App() {
         </Box>
       </Box>
 
-      {/* Modal for applying XML changes */}
       <ApplyChangesModal open={changesModalOpen} onClose={closeChangesModal} />
 
-      {/* Modal for Prompt Store */}
       <PromptStoreModal
         open={promptStoreModalOpen}
         onClose={closePromptStoreModal}
       />
 
-      {/* Global Snackbar for success/error messages */}
       <GlobalSnackbar />
     </Wrapper>
   )
