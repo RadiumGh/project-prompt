@@ -14,28 +14,28 @@ import {
   Button,
   Container,
   IconButton,
-  Tooltip
-} from '@mui/material';
-import { styled } from '@mui/material/styles';
-import DownloadIcon from '@mui/icons-material/Download';
-import ClearIcon from '@mui/icons-material/Clear';
-import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt';
-import { useState, useEffect } from 'react';
-import { useFileStore } from './store/fileStore';
-import DirectoryTree from './components/DirectoryTree';
-import InstructionsField from './components/InstructionsField';
-import IgnoreInput from './components/IgnoreInput';
-import SelectedFilesList from './components/SelectedFilesList';
-import CustomInstructionsBar from './components/CustomInstructionsBar';
-import GlobalSnackbar from './components/GlobalSnackbar';
-import ApplyChangesModal from './components/modals/ApplyChangesModal';
-import PromptStoreModal from './components/modals/PromptStoreModal';
+  Tooltip,
+} from '@mui/material'
+import { styled } from '@mui/material/styles'
+import DownloadIcon from '@mui/icons-material/Download'
+import ClearIcon from '@mui/icons-material/Clear'
+import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt'
+import { useState, useEffect } from 'react'
+import { useFileStore } from './store/fileStore'
+import DirectoryTree from './components/DirectoryTree'
+import InstructionsField from './components/InstructionsField'
+import IgnoreInput from './components/IgnoreInput'
+import SelectedFilesList from './components/SelectedFilesList'
+import CustomInstructionsBar from './components/CustomInstructionsBar'
+import GlobalSnackbar from './components/GlobalSnackbar'
+import ApplyChangesModal from './components/modals/ApplyChangesModal'
+import PromptStoreModal from './components/modals/PromptStoreModal'
 
 const Wrapper = styled(Container)(() => ({
   display: 'flex',
   flexDirection: 'column',
   height: '100%',
-}));
+}))
 
 export default function App() {
   const {
@@ -44,48 +44,59 @@ export default function App() {
     clearSelection,
     ignorePatterns,
     loadSelectedFiles,
-    fetchDirectoryFromServer
-  } = useFileStore();
+    fetchDirectoryFromServer,
+  } = useFileStore()
 
   useEffect(() => {
     // On mount, fetch the directory structure from server
-    fetchDirectoryFromServer();
+    fetchDirectoryFromServer()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [])
 
   const handleClearSelection = () => {
-    clearSelection();
-  };
+    clearSelection()
+  }
 
-  const [changesModalOpen, setChangesModalOpen] = useState(false);
-  const openChangesModal = () => setChangesModalOpen(true);
-  const closeChangesModal = () => setChangesModalOpen(false);
+  const [changesModalOpen, setChangesModalOpen] = useState(false)
+  const openChangesModal = () => setChangesModalOpen(true)
+  const closeChangesModal = () => setChangesModalOpen(false)
 
-  const [promptStoreModalOpen, setPromptStoreModalOpen] = useState(false);
-  const openPromptStoreModal = () => setPromptStoreModalOpen(true);
-  const closePromptStoreModal = () => setPromptStoreModalOpen(false);
+  const [promptStoreModalOpen, setPromptStoreModalOpen] = useState(false)
+  const openPromptStoreModal = () => setPromptStoreModalOpen(true)
+  const closePromptStoreModal = () => setPromptStoreModalOpen(false)
 
   const handleAttachFiles = () => {
-    loadSelectedFiles();
-  };
+    loadSelectedFiles()
+  }
 
   return (
     <Wrapper maxWidth={false} disableGutters>
       {/* Top AppBar */}
-      <AppBar position='static' elevation={0} sx={{ borderBottom: 'none', p: 0 }}>
-        <Toolbar sx={{ display: 'flex', flexWrap: 'nowrap', gap: 2, minHeight: '44px' }}>
-          <Typography variant='h6' sx={{ whiteSpace: 'nowrap' }}>
+      <AppBar
+        position="static"
+        elevation={0}
+        sx={{ borderBottom: 'none', p: 0 }}
+      >
+        <Toolbar
+          sx={{
+            display: 'flex',
+            flexWrap: 'nowrap',
+            gap: 2,
+            minHeight: '44px',
+          }}
+        >
+          <Typography variant="h6" sx={{ whiteSpace: 'nowrap' }}>
             Project Prompt
           </Typography>
           <Box sx={{ flex: 1 }} />
-          <Button variant='text' onClick={openPromptStoreModal} color='inherit'>
+          <Button variant="text" onClick={openPromptStoreModal} color="inherit">
             Prompt Store
           </Button>
-          <Tooltip title='Apply code changes (XML)'>
+          <Tooltip title="Apply code changes (XML)">
             <span>
               <Button
-                variant='outlined'
-                color='primary'
+                variant="outlined"
+                color="primary"
                 startIcon={<SystemUpdateAltIcon />}
                 onClick={openChangesModal}
               >
@@ -131,12 +142,17 @@ export default function App() {
               gap: 1,
             }}
           >
-            <Typography variant='subtitle1' sx={{ fontWeight: 'bold' }}>
-              Server Directory
+            <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+              Project Directory
             </Typography>
+
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Tooltip title='Clear selection'>
-                <IconButton size='small' color='inherit' onClick={handleClearSelection}>
+              <Tooltip title="Clear selection">
+                <IconButton
+                  size="small"
+                  color="inherit"
+                  onClick={handleClearSelection}
+                >
                   <ClearIcon />
                 </IconButton>
               </Tooltip>
@@ -146,7 +162,9 @@ export default function App() {
           {/* Tree content */}
           <Box sx={{ flex: 1, position: 'relative', overflowY: 'auto', p: 1 }}>
             {fileTree.length === 0 ? (
-              <Typography variant='body2'>No directory data loaded yet or fetch error.</Typography>
+              <Typography variant="body2">
+                No directory data loaded yet or fetch error.
+              </Typography>
             ) : (
               <DirectoryTree />
             )}
@@ -164,8 +182,8 @@ export default function App() {
           >
             <IgnoreInput />
             <Button
-              variant='outlined'
-              color='primary'
+              variant="outlined"
+              color="primary"
               startIcon={<DownloadIcon />}
               onClick={handleAttachFiles}
               disabled={selectedFiles.length === 0}
@@ -226,5 +244,5 @@ export default function App() {
       {/* Global Snackbar for success/error messages */}
       <GlobalSnackbar />
     </Wrapper>
-  );
+  )
 }
