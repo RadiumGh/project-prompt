@@ -1,14 +1,47 @@
-import fs from 'fs';
-import path from 'path';
+import fs from 'fs'
 
-let isWatching = false;
+let isWatching = false
 
-export function watchProjectDir(baseDir: string) {
-  if (isWatching) return;
-  isWatching = true;
+export function watchProjectDir(
+  baseDir: string,
+  onDirectoryChange?: () => void,
+) {
+  if (isWatching) return
+  isWatching = true
+
+  const ignoredPatterns = [
+    '.git',
+    'node_modules',
+    '.next',
+    '.idea',
+    'target',
+    'dist',
+    'build',
+    '**/*.log',
+    '**/tmp/*',
+  ]
+
+  let debounceTimer: NodeJS.Timeout
 
   fs.watch(baseDir, { recursive: true }, (eventType, filename) => {
-    console.log('Project dir changed:', eventType, filename);
-    // Further logic could broadcast changes via SSE or websockets if desired.
-  });
+    if (!filename) return
+
+    // Check if file matches any ignored pattern
+    const isIgnored = ignoredPatterns.some(pattern => {
+      if (pattern.includes('*')) {
+        return filename.includes(pattern.replace(/\*/g, ''))
+      }
+      return filename.includes(pattern)
+    })
+
+    if (!isIgnored) {
+      console.log('File changed:', eventType, filename)
+
+      // Debounce the callback to avoid multiple rapid calls
+      clearTimeout(debounceTimer)
+      debounceTimer = setTimeout(() => {
+        onDirectoryChange?.()
+      }, 500) // Wait 300ms after last change before calling callback
+    }
+  })
 }
