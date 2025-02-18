@@ -12,8 +12,7 @@ import { styled } from '@mui/material/styles'
 import DownloadIcon from '@mui/icons-material/Download'
 import ClearIcon from '@mui/icons-material/Clear'
 import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt'
-import RefreshIcon from '@mui/icons-material/Refresh'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useFileStore } from './store/fileStore'
 import DirectoryTree from './components/DirectoryTree'
 import InstructionsField from './components/InstructionsField'
@@ -25,6 +24,7 @@ import ApplyChangesModal from './components/modals/ApplyChangesModal'
 import PromptStoreModal from './components/modals/PromptStoreModal'
 import { useInstructionsStore } from './store/instructionsStore'
 import { useCustomInstructionsStore } from './store/customInstructionsStore'
+import { useThemeStore } from './store/themeStore'
 
 const Wrapper = styled(Container)(() => ({
   display: 'flex',
@@ -40,71 +40,98 @@ export default function App() {
     ignorePatterns,
     loadSelectedFiles,
     fetchDirectoryFromServer,
+    selectedPaths,
+    includeTreeInPrompt,
   } = useFileStore()
 
-  const { instructions, setInstructions } = useInstructionsStore()
-  const { customInstructions, setAllCustomInstructions } =
-    useCustomInstructionsStore()
+  const {
+    instructions,
+    setInstructions,
+    setStateFromConfig: setInstructionsConfig,
+  } = useInstructionsStore()
+  const {
+    customInstructions,
+    setAllCustomInstructions,
+    setStateFromConfig: setCustomConfig,
+  } = useCustomInstructionsStore()
+  const { themeMode, setStateFromConfig: setThemeConfig } = useThemeStore()
 
-  useEffect(() => {
-    async function loadConfig() {
-      try {
-        const resp = await fetch('/api/pjp-config')
-        if (resp.ok) {
-          const data = await resp.json()
-          if (data.instructions) {
-            setInstructions(data.instructions)
-          }
-          if (Array.isArray(data.customInstructions)) {
-            setAllCustomInstructions(data.customInstructions)
-          }
-        }
-      } catch (e) {
-        console.error('Failed to load pjp-config:', e)
-      }
-    }
-    loadConfig()
-  }, [setInstructions, setAllCustomInstructions])
+  const [changesModalOpen, setChangesModalOpen] = useState(false)
+  const [promptStoreModalOpen, setPromptStoreModalOpen] = useState(false)
 
-  useEffect(() => {
-    async function saveConfig() {
-      const payload = {
-        instructions,
-        customInstructions,
-      }
-      try {
-        await fetch('/api/pjp-config', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        })
-      } catch (e) {
-        console.error('Failed to save pjp-config:', e)
-      }
-    }
-    saveConfig()
-  }, [instructions, customInstructions])
+  const openChangesModal = () => setChangesModalOpen(true)
+  const closeChangesModal = () => setChangesModalOpen(false)
 
-  useEffect(() => {
-    fetchDirectoryFromServer()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  const openPromptStoreModal = () => setPromptStoreModalOpen(true)
+  const closePromptStoreModal = () => setPromptStoreModalOpen(false)
 
   const handleClearSelection = () => {
     clearSelection()
   }
 
-  const [changesModalOpen, setChangesModalOpen] = useState(false)
-  const openChangesModal = () => setChangesModalOpen(true)
-  const closeChangesModal = () => setChangesModalOpen(false)
-
-  const [promptStoreModalOpen, setPromptStoreModalOpen] = useState(false)
-  const openPromptStoreModal = () => setPromptStoreModalOpen(true)
-  const closePromptStoreModal = () => setPromptStoreModalOpen(false)
-
   const handleAttachFiles = () => {
     loadSelectedFiles()
   }
+
+  useEffect(() => {
+    fetchDirectoryFromServer()
+  }, [fetchDirectoryFromServer])
+
+  // Load config on mount
+  useEffect(() => {
+    ;(async () => {
+      try {
+        const resp = await fetch('/api/pjp-config')
+        if (resp.ok) {
+          const data = await resp.json()
+          setInstructionsConfig(data)
+          setCustomConfig(data)
+
+          useFileStore.getState().setStateFromConfig(data)
+          setThemeConfig(data)
+        }
+      } catch (e) {
+        console.error('Failed to load pjp-config:', e)
+      }
+    })()
+  }, [setInstructionsConfig, setCustomConfig, setThemeConfig])
+
+  // Track all config changes and post them to server.
+  const prevConfigRef = useRef<any>(null)
+  useEffect(() => {
+    const config = {
+      instructions,
+      customInstructions,
+      selectedPaths,
+      ignorePatterns,
+      includeTreeInPrompt,
+      themeMode,
+    }
+
+    const prevConfig = prevConfigRef.current
+    prevConfigRef.current = config
+
+    if (JSON.stringify(prevConfig) !== JSON.stringify(config)) {
+      ;(async () => {
+        try {
+          await fetch('/api/pjp-config', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(config),
+          })
+        } catch (e) {
+          console.error('Failed to save pjp-config:', e)
+        }
+      })()
+    }
+  }, [
+    instructions,
+    customInstructions,
+    selectedPaths,
+    ignorePatterns,
+    includeTreeInPrompt,
+    themeMode,
+  ])
 
   return (
     <Wrapper maxWidth={false} disableGutters>
@@ -188,16 +215,6 @@ export default function App() {
                   <ClearIcon />
                 </IconButton>
               </Tooltip>
-
-              {/* <Tooltip title="Refresh directory">
-                <IconButton
-                  size="small"
-                  color="inherit"
-                  onClick={() => fetchDirectoryFromServer()}
-                >
-                  <RefreshIcon />
-                </IconButton>
-              </Tooltip> */}
             </Box>
           </Box>
 
@@ -247,11 +264,9 @@ export default function App() {
           }}
         >
           <CustomInstructionsBar />
-
           <Box>
             <InstructionsField />
           </Box>
-
           <Box
             sx={{
               flex: 1,
@@ -269,12 +284,10 @@ export default function App() {
       </Box>
 
       <ApplyChangesModal open={changesModalOpen} onClose={closeChangesModal} />
-
       <PromptStoreModal
         open={promptStoreModalOpen}
         onClose={closePromptStoreModal}
       />
-
       <GlobalSnackbar />
     </Wrapper>
   )
