@@ -62,14 +62,20 @@ export const useFileStore = create<FileStoreState>()(
       function applyPersistedSelection(
         nodes: FileNode[],
         selectedPaths: string[],
+        parentSelected = false,
       ): FileNode[] {
         return nodes.map(node => {
-          let sel = selectedPaths.includes(node.path)
+          const isNodeSelected =
+            parentSelected || selectedPaths.includes(node.path)
           let newChildren = node.children || []
           if (node.isDirectory && node.children && node.children.length > 0) {
-            newChildren = applyPersistedSelection(node.children, selectedPaths)
+            newChildren = applyPersistedSelection(
+              node.children,
+              selectedPaths,
+              isNodeSelected,
+            )
           }
-          return { ...node, selected: sel, children: newChildren }
+          return { ...node, selected: isNodeSelected, children: newChildren }
         })
       }
 

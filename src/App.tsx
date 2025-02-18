@@ -188,7 +188,8 @@ export default function App() {
                   <ClearIcon />
                 </IconButton>
               </Tooltip>
-              <Tooltip title="Refresh directory">
+
+              {/* <Tooltip title="Refresh directory">
                 <IconButton
                   size="small"
                   color="inherit"
@@ -196,7 +197,7 @@ export default function App() {
                 >
                   <RefreshIcon />
                 </IconButton>
-              </Tooltip>
+              </Tooltip> */}
             </Box>
           </Box>
 
