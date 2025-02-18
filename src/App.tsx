@@ -23,6 +23,8 @@ import CustomInstructionsBar from './components/CustomInstructionsBar'
 import GlobalSnackbar from './components/GlobalSnackbar'
 import ApplyChangesModal from './components/modals/ApplyChangesModal'
 import PromptStoreModal from './components/modals/PromptStoreModal'
+import { useInstructionsStore } from './store/instructionsStore'
+import { useCustomInstructionsStore } from './store/customInstructionsStore'
 
 const Wrapper = styled(Container)(() => ({
   display: 'flex',
@@ -39,6 +41,49 @@ export default function App() {
     loadSelectedFiles,
     fetchDirectoryFromServer,
   } = useFileStore()
+
+  const { instructions, setInstructions } = useInstructionsStore()
+  const { customInstructions, setAllCustomInstructions } =
+    useCustomInstructionsStore()
+
+  useEffect(() => {
+    async function loadConfig() {
+      try {
+        const resp = await fetch('/api/pjp-config')
+        if (resp.ok) {
+          const data = await resp.json()
+          if (data.instructions) {
+            setInstructions(data.instructions)
+          }
+          if (Array.isArray(data.customInstructions)) {
+            setAllCustomInstructions(data.customInstructions)
+          }
+        }
+      } catch (e) {
+        console.error('Failed to load pjp-config:', e)
+      }
+    }
+    loadConfig()
+  }, [setInstructions, setAllCustomInstructions])
+
+  useEffect(() => {
+    async function saveConfig() {
+      const payload = {
+        instructions,
+        customInstructions,
+      }
+      try {
+        await fetch('/api/pjp-config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        })
+      } catch (e) {
+        console.error('Failed to save pjp-config:', e)
+      }
+    }
+    saveConfig()
+  }, [instructions, customInstructions])
 
   useEffect(() => {
     fetchDirectoryFromServer()

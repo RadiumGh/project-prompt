@@ -74,8 +74,7 @@ export const useFileStore = create<FileStoreState>()(
           }
           const data = await resp.json();
           const tree = data.tree || [];
-          // Convert the fetched data into our FileNode structure with default selected=false
-          const parseNodes = (nodes: any[]): FileNode[] => {
+          function parseNodes(nodes: any[]): FileNode[] {
             return nodes.map(n => ({
               name: n.name,
               path: n.path,
@@ -83,9 +82,35 @@ export const useFileStore = create<FileStoreState>()(
               selected: false,
               children: n.isDirectory && n.children ? parseNodes(n.children) : [],
             }));
-          };
+          }
           const newTree = parseNodes(tree);
-          set({ fileTree: newTree, selectedFiles: [] });
+
+          function applyPersistedSelection(nodes: FileNode[], selectedPaths: string[]): FileNode[] {
+            return nodes.map(node => {
+              let sel = selectedPaths.includes(node.path);
+              let newChildren = node.children || [];
+              if (node.isDirectory && node.children && node.children.length > 0) {
+                newChildren = applyPersistedSelection(node.children, selectedPaths);
+              }
+              return { ...node, selected: sel, children: newChildren };
+            });
+          }
+
+          const finalTree = applyPersistedSelection(newTree, get().persistedSelectedFilePaths);
+
+          function gatherSelected(nodes: FileNode[]): FileNode[] {
+            let result: FileNode[] = [];
+            for (const nd of nodes) {
+              if (nd.selected) result.push(nd);
+              if (nd.children && nd.children.length > 0) {
+                result = result.concat(gatherSelected(nd.children));
+              }
+            }
+            return result;
+          }
+
+          const selectedAfter = gatherSelected(finalTree);
+          set({ fileTree: finalTree, selectedFiles: selectedAfter });
         } catch (err) {
           console.error('Error fetching directory from server:', err);
         }
