@@ -25,6 +25,8 @@ interface FileStoreState {
   includeTreeInPrompt: boolean
   selectedPaths: string[]
   excludedPaths: string[]
+  // NEW: store the rootDirName dynamically
+  rootDirName: string
 
   setIgnorePatterns: (value: string) => void
   setIncludeTreeInPrompt: (val: boolean) => void
@@ -67,6 +69,8 @@ export const useFileStore = create<FileStoreState>((set, get) => ({
   includeTreeInPrompt: true,
   selectedPaths: [],
   excludedPaths: [],
+  // Initialize rootDirName to an empty string
+  rootDirName: '',
 
   setIgnorePatterns(value) {
     set({ ignorePatterns: value })
@@ -96,7 +100,7 @@ export const useFileStore = create<FileStoreState>((set, get) => ({
       try {
         const response = await fetch('/api/list-directory')
         const data = await response.json()
-        const { tree } = data
+        const { tree, rootDirName } = data
         const parsedTree = parseNodes(tree)
         const { selectedPaths, excludedPaths } = get()
         const finalTree = applyPersistedSelection(
@@ -104,7 +108,11 @@ export const useFileStore = create<FileStoreState>((set, get) => ({
           selectedPaths,
           excludedPaths,
         )
-        set({ fileTree: finalTree, selectedFiles: gatherSelected(finalTree) })
+        set({
+          fileTree: finalTree,
+          selectedFiles: gatherSelected(finalTree),
+          rootDirName: rootDirName || '',
+        })
       } catch (error) {
         console.error('Error in fallback fetch:', error)
       }
@@ -114,7 +122,7 @@ export const useFileStore = create<FileStoreState>((set, get) => ({
       const eventSource = new EventSource('/api/list-directory')
       eventSource.onmessage = event => {
         const data = JSON.parse(event.data)
-        const { tree } = data
+        const { tree, rootDirName } = data
         const parsedTree = parseNodes(tree)
         const { selectedPaths, excludedPaths } = get()
         const finalTree = applyPersistedSelection(
@@ -122,7 +130,11 @@ export const useFileStore = create<FileStoreState>((set, get) => ({
           selectedPaths,
           excludedPaths,
         )
-        set({ fileTree: finalTree, selectedFiles: gatherSelected(finalTree) })
+        set({
+          fileTree: finalTree,
+          selectedFiles: gatherSelected(finalTree),
+          rootDirName: rootDirName || '',
+        })
       }
       eventSource.onerror = () => {
         console.error('SSE connection error')
@@ -286,7 +298,6 @@ function findSelectedAncestor(
     const ancestor = parts.join('/')
     if (excludedPaths.includes(ancestor)) return null
     if (selectedPaths.includes(ancestor)) {
-      // check if that ancestor is itself excluded or partial
       return ancestor
     }
     parts.pop()

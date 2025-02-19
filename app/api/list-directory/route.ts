@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import path from 'path'
 import { listDirectory } from '@/server-utils/listDirectory'
 import { watchProjectDir } from '@/server-utils/fileWatcher'
 
@@ -10,20 +11,28 @@ export async function GET(req: NextRequest) {
     const baseDir = process.cwd()
     const isSSE = req.headers.get('accept') === 'text/event-stream'
 
+    // List the directory as before
+    const tree = listDirectory(baseDir)
+    // Dynamically derive the root directory name (the project name)
+    const rootDirName = path.basename(baseDir)
+
     if (isSSE) {
       const stream = new ReadableStream({
         start(controller) {
           clients.add(controller)
 
-          // Send initial tree
-          const tree = listDirectory(baseDir)
-          controller.enqueue(`data: ${JSON.stringify({ tree })}\n\n`)
+          // Send initial tree along with the rootDirName
+          controller.enqueue(
+            `data: ${JSON.stringify({ tree, rootDirName })}\n\n`,
+          )
 
           // Set up file watcher if not already watching
           watchProjectDir(baseDir, () => {
             const updatedTree = listDirectory(baseDir)
             try {
-              controller.enqueue(`data: ${JSON.stringify({ tree: updatedTree })}\n\n`)
+              controller.enqueue(
+                `data: ${JSON.stringify({ tree: updatedTree, rootDirName })}\n\n`,
+              )
             } catch (err) {
               // stream closed, ignore error
             }
@@ -43,9 +52,8 @@ export async function GET(req: NextRequest) {
       })
     }
 
-    // Regular GET request
-    const tree = listDirectory(baseDir)
-    return NextResponse.json({ tree })
+    // Regular GET request - return tree + rootDirName in JSON
+    return NextResponse.json({ tree, rootDirName })
   } catch (error: any) {
     console.error('Error listing directory:', error)
     return NextResponse.json({ error: String(error) }, { status: 500 })

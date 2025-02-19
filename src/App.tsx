@@ -43,15 +43,14 @@ export default function App() {
     fetchDirectoryFromServer,
     selectedPaths,
     includeTreeInPrompt,
+    rootDirName,
   } = useFileStore()
   const [hasLoadedConfig, setHasLoadedConfig] = useState(false)
 
   const { instructions, setStateFromConfig: setInstructionsConfig } =
     useInstructionsStore()
-
   const { customInstructions, setStateFromConfig: setCustomConfig } =
     useCustomInstructionsStore()
-
   const { themeMode, setStateFromConfig: setThemeConfig } = useThemeStore()
 
   const [changesModalOpen, setChangesModalOpen] = useState(false)
@@ -160,10 +159,11 @@ export default function App() {
           <Typography variant="h6" sx={{ whiteSpace: 'nowrap' }}>
             Project Prompt
           </Typography>
+
           <Box sx={{ flex: 1 }} />
-          <Button variant="text" onClick={openPromptStoreModal} color="inherit">
+          {/* <Button variant="text" onClick={openPromptStoreModal} color="inherit">
             Prompt Store
-          </Button>
+          </Button> */}
           <Tooltip title="Apply code changes">
             <span>
               <Button
@@ -212,8 +212,9 @@ export default function App() {
             }}
           >
             <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
-              Project Directory
+              {rootDirName}
             </Typography>
+
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <Tooltip title="Clear selection">
                 <IconButton
