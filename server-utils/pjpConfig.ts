@@ -14,6 +14,7 @@ interface PjpConfig {
     isActive: boolean;
   }>;
   selectedPaths: string[];
+  excludedPaths: string[];
   ignorePatterns: string;
   includeTreeInPrompt: boolean;
   themeMode: 'light' | 'dark';
@@ -33,6 +34,7 @@ export async function loadPjpConfig(): Promise<PjpConfig> {
       instructions: parsed.instructions ?? '',
       customInstructions: Array.isArray(parsed.customInstructions) ? parsed.customInstructions : [],
       selectedPaths: Array.isArray(parsed.selectedPaths) ? parsed.selectedPaths : [],
+      excludedPaths: Array.isArray(parsed.excludedPaths) ? parsed.excludedPaths : [],
       ignorePatterns: typeof parsed.ignorePatterns === 'string' ? parsed.ignorePatterns : '',
       includeTreeInPrompt: typeof parsed.includeTreeInPrompt === 'boolean' ? parsed.includeTreeInPrompt : true,
       themeMode: parsed.themeMode === 'light' ? 'light' : 'dark'
@@ -42,6 +44,7 @@ export async function loadPjpConfig(): Promise<PjpConfig> {
       instructions: '',
       customInstructions: [],
       selectedPaths: [],
+      excludedPaths: [],
       ignorePatterns: '',
       includeTreeInPrompt: true,
       themeMode: 'dark'

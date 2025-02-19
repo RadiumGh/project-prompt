@@ -38,6 +38,7 @@ export default function App() {
     selectedFiles,
     clearSelection,
     ignorePatterns,
+    excludedPaths,
     loadSelectedFiles,
     fetchDirectoryFromServer,
     selectedPaths,
@@ -70,10 +71,6 @@ export default function App() {
     loadSelectedFiles()
   }
 
-  useEffect(() => {
-    fetchDirectoryFromServer()
-  }, [fetchDirectoryFromServer])
-
   // Load config on mount
   useEffect(() => {
     ;(async () => {
@@ -87,6 +84,8 @@ export default function App() {
 
           useFileStore.getState().setStateFromConfig(data)
           setThemeConfig(data)
+
+          fetchDirectoryFromServer()
         }
       } catch (e) {
         console.error('Failed to load pjp-config:', e)
@@ -94,7 +93,12 @@ export default function App() {
         setHasLoadedConfig(true)
       }
     })()
-  }, [setInstructionsConfig, setCustomConfig, setThemeConfig])
+  }, [
+    setInstructionsConfig,
+    setCustomConfig,
+    setThemeConfig,
+    fetchDirectoryFromServer,
+  ])
 
   // Track all config changes and post them to server.
   const prevConfigRef = useRef<any>(null)
@@ -105,6 +109,7 @@ export default function App() {
       instructions,
       customInstructions,
       selectedPaths,
+      excludedPaths,
       ignorePatterns,
       includeTreeInPrompt,
       themeMode,

@@ -4,7 +4,6 @@ import { loadPjpConfig, savePjpConfig } from '@/server-utils/pjpConfig'
 export async function GET() {
   try {
     const config = await loadPjpConfig()
-    console.log('>> config:', config)
 
     return NextResponse.json(config)
   } catch (e: any) {

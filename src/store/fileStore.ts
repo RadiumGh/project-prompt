@@ -24,6 +24,7 @@ interface FileStoreState {
   ignorePatterns: string
   includeTreeInPrompt: boolean
   selectedPaths: string[]
+  excludedPaths: string[]
 
   setIgnorePatterns: (value: string) => void
   setIncludeTreeInPrompt: (val: boolean) => void
@@ -65,6 +66,7 @@ export const useFileStore = create<FileStoreState>((set, get) => ({
   ignorePatterns: '',
   includeTreeInPrompt: true,
   selectedPaths: [],
+  excludedPaths: [],
 
   setIgnorePatterns(value) {
     set({ ignorePatterns: value })
@@ -84,6 +86,9 @@ export const useFileStore = create<FileStoreState>((set, get) => ({
     if (Array.isArray(config.selectedPaths)) {
       set({ selectedPaths: config.selectedPaths })
     }
+    if (Array.isArray(config.excludedPaths)) {
+      set({ excludedPaths: config.excludedPaths })
+    }
   },
 
   async fetchDirectoryFromServer() {
@@ -93,8 +98,12 @@ export const useFileStore = create<FileStoreState>((set, get) => ({
         const data = await response.json()
         const { tree } = data
         const parsedTree = parseNodes(tree)
-        const { selectedPaths } = get()
-        const finalTree = applyPersistedSelection(parsedTree, selectedPaths)
+        const { selectedPaths, excludedPaths } = get()
+        const finalTree = applyPersistedSelection(
+          parsedTree,
+          selectedPaths,
+          excludedPaths,
+        )
         set({ fileTree: finalTree, selectedFiles: gatherSelected(finalTree) })
       } catch (error) {
         console.error('Error in fallback fetch:', error)
@@ -107,8 +116,12 @@ export const useFileStore = create<FileStoreState>((set, get) => ({
         const data = JSON.parse(event.data)
         const { tree } = data
         const parsedTree = parseNodes(tree)
-        const { selectedPaths } = get()
-        const finalTree = applyPersistedSelection(parsedTree, selectedPaths)
+        const { selectedPaths, excludedPaths } = get()
+        const finalTree = applyPersistedSelection(
+          parsedTree,
+          selectedPaths,
+          excludedPaths,
+        )
         set({ fileTree: finalTree, selectedFiles: gatherSelected(finalTree) })
       }
       eventSource.onerror = () => {
@@ -123,72 +136,70 @@ export const useFileStore = create<FileStoreState>((set, get) => ({
   },
 
   toggleSelection(path, handle, isDirectory) {
-    const { fileTree, selectedPaths } = get()
-    const updateSelection = (nodes: FileNode[]): FileNode[] => {
-      return nodes.map(node => {
-        if (node.path === path) {
-          const newVal = !node.selected
-          let newSelectedPaths = [...selectedPaths]
-          if (newVal && !newSelectedPaths.includes(node.path)) {
-            newSelectedPaths.push(node.path)
-          } else if (!newVal) {
-            newSelectedPaths = newSelectedPaths.filter(p => p !== node.path)
-          }
-          if (node.isDirectory && node.children) {
-            node.children = toggleChildren(
-              node.children,
-              newVal,
-              newSelectedPaths,
-            )
-          }
-          set({ selectedPaths: newSelectedPaths })
-          return { ...node, selected: newVal }
+    const { selectedPaths, excludedPaths, fileTree } = get()
+
+    const newSelectedPaths = [...selectedPaths]
+    const newExcludedPaths = [...excludedPaths]
+
+    const currentlySelected = isEffectivelySelected(
+      path,
+      newSelectedPaths,
+      newExcludedPaths,
+    )
+
+    if (currentlySelected) {
+      // Unselecting
+      if (newSelectedPaths.includes(path)) {
+        // If this path was explicitly fully selected, remove it
+        removePathAndDescendants(path, newSelectedPaths, newExcludedPaths)
+      } else {
+        // It's selected via an ancestor, so exclude it
+        if (!newExcludedPaths.includes(path)) {
+          newExcludedPaths.push(path)
         }
-        if (node.children && node.children.length > 0) {
-          return { ...node, children: updateSelection(node.children) }
+      }
+    } else {
+      // Selecting
+      if (isDirectory) {
+        // Mark this directory as fully selected, remove children from selectedPaths/excludedPaths
+        if (!newSelectedPaths.includes(path)) {
+          newSelectedPaths.push(path)
         }
-        return node
-      })
+        removeAllDescendants(path, newSelectedPaths, newExcludedPaths)
+      } else {
+        // It's a file, just add to selectedPaths if not present, remove from excludedPaths if present
+        if (!newSelectedPaths.includes(path)) {
+          newSelectedPaths.push(path)
+        }
+        const idxEx = newExcludedPaths.indexOf(path)
+        if (idxEx >= 0) {
+          newExcludedPaths.splice(idxEx, 1)
+        }
+      }
     }
 
-    const toggleChildren = (
-      children: FileNode[],
-      newVal: boolean,
-      newSelected: string[],
-    ): FileNode[] => {
-      return children.map(child => {
-        if (newVal && !newSelected.includes(child.path)) {
-          newSelected.push(child.path)
-        } else if (!newVal) {
-          newSelected = newSelected.filter(p => p !== child.path)
-        }
-        if (child.isDirectory && child.children) {
-          child.children = toggleChildren(child.children, newVal, newSelected)
-        }
-        return { ...child, selected: newVal }
-      })
-    }
-
-    const newTree = updateSelection(fileTree)
-    set({ fileTree: newTree, selectedFiles: gatherSelected(newTree) })
+    const updatedTree = applyPersistedSelection(
+      fileTree,
+      newSelectedPaths,
+      newExcludedPaths,
+    )
+    set({
+      fileTree: updatedTree,
+      selectedFiles: gatherSelected(updatedTree),
+      selectedPaths: newSelectedPaths,
+      excludedPaths: newExcludedPaths,
+    })
   },
 
   clearSelection() {
     const { fileTree } = get()
-    const clearAll = (nodes: FileNode[]): FileNode[] => {
-      return nodes.map(node => {
-        if (node.children && node.children.length > 0) {
-          node.children = clearAll(node.children)
-        }
-        return { ...node, selected: false }
-      })
-    }
     const newTree = clearAll(fileTree)
     set({
       fileTree: newTree,
       selectedFiles: [],
       loadedFiles: [],
       selectedPaths: [],
+      excludedPaths: [],
     })
   },
 
@@ -242,20 +253,97 @@ export const useFileStore = create<FileStoreState>((set, get) => ({
 function applyPersistedSelection(
   nodes: FileNode[],
   selectedPaths: string[],
+  excludedPaths: string[],
 ): FileNode[] {
   return nodes.map(node => {
-    let newChildren = node.children || []
-    if (node.isDirectory && node.children && node.children.length > 0) {
-      newChildren = applyPersistedSelection(node.children, selectedPaths)
+    const childNodes = node.children
+      ? applyPersistedSelection(node.children, selectedPaths, excludedPaths)
+      : []
+    const sel = isEffectivelySelected(node.path, selectedPaths, excludedPaths)
+    return { ...node, selected: sel, children: childNodes }
+  })
+}
+
+function isEffectivelySelected(
+  path: string,
+  selectedPaths: string[],
+  excludedPaths: string[],
+): boolean {
+  if (excludedPaths.includes(path)) return false
+  if (selectedPaths.includes(path)) return true
+  const parent = findSelectedAncestor(path, selectedPaths, excludedPaths)
+  return !!parent
+}
+
+function findSelectedAncestor(
+  path: string,
+  selectedPaths: string[],
+  excludedPaths: string[],
+): string | null {
+  const parts = path.split('/')
+  parts.pop() // remove last segment
+  while (parts.length > 0) {
+    const ancestor = parts.join('/')
+    if (excludedPaths.includes(ancestor)) return null
+    if (selectedPaths.includes(ancestor)) {
+      // check if that ancestor is itself excluded or partial
+      return ancestor
     }
+    parts.pop()
+  }
+  return null
+}
 
-    const allChildrenSelected =
-      node.isDirectory &&
-      newChildren.length > 0 &&
-      newChildren.every(child => child.selected)
+function removePathAndDescendants(
+  path: string,
+  selectedPaths: string[],
+  excludedPaths: string[],
+): void {
+  // Remove this path from selectedPaths
+  const idx = selectedPaths.indexOf(path)
+  if (idx >= 0) {
+    selectedPaths.splice(idx, 1)
+  }
+  // Also remove it from excludedPaths if present
+  const idxEx = excludedPaths.indexOf(path)
+  if (idxEx >= 0) {
+    excludedPaths.splice(idxEx, 1)
+  }
+  // Remove all children from selectedPaths and excludedPaths if they start with path + '/'
+  const prefix = path + '/'
+  for (let i = selectedPaths.length - 1; i >= 0; i--) {
+    if (selectedPaths[i].startsWith(prefix)) {
+      selectedPaths.splice(i, 1)
+    }
+  }
+  for (let i = excludedPaths.length - 1; i >= 0; i--) {
+    if (excludedPaths[i].startsWith(prefix)) {
+      excludedPaths.splice(i, 1)
+    }
+  }
+}
 
-    const isNodeSelected =
-      selectedPaths.includes(node.path) || allChildrenSelected
-    return { ...node, selected: isNodeSelected, children: newChildren }
+function removeAllDescendants(
+  path: string,
+  selectedPaths: string[],
+  excludedPaths: string[],
+): void {
+  const prefix = path + '/'
+  for (let i = selectedPaths.length - 1; i >= 0; i--) {
+    if (selectedPaths[i] !== path && selectedPaths[i].startsWith(prefix)) {
+      selectedPaths.splice(i, 1)
+    }
+  }
+  for (let i = excludedPaths.length - 1; i >= 0; i--) {
+    if (excludedPaths[i].startsWith(prefix)) {
+      excludedPaths.splice(i, 1)
+    }
+  }
+}
+
+function clearAll(nodes: FileNode[]): FileNode[] {
+  return nodes.map(node => {
+    const children = node.children ? clearAll(node.children) : []
+    return { ...node, selected: false, children }
   })
 }
