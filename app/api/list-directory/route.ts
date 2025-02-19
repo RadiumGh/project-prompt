@@ -22,9 +22,11 @@ export async function GET(req: NextRequest) {
           // Set up file watcher if not already watching
           watchProjectDir(baseDir, () => {
             const updatedTree = listDirectory(baseDir)
-            controller.enqueue(
-              `data: ${JSON.stringify({ tree: updatedTree })}\n\n`,
-            )
+            try {
+              controller.enqueue(`data: ${JSON.stringify({ tree: updatedTree })}\n\n`)
+            } catch (err) {
+              // stream closed, ignore error
+            }
           })
         },
         cancel(controller) {

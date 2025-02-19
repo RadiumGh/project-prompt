@@ -244,11 +244,18 @@ function applyPersistedSelection(
   selectedPaths: string[],
 ): FileNode[] {
   return nodes.map(node => {
-    const isNodeSelected = selectedPaths.includes(node.path)
     let newChildren = node.children || []
     if (node.isDirectory && node.children && node.children.length > 0) {
       newChildren = applyPersistedSelection(node.children, selectedPaths)
     }
+
+    const allChildrenSelected =
+      node.isDirectory &&
+      newChildren.length > 0 &&
+      newChildren.every(child => child.selected)
+
+    const isNodeSelected =
+      selectedPaths.includes(node.path) || allChildrenSelected
     return { ...node, selected: isNodeSelected, children: newChildren }
   })
 }

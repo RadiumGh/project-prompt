@@ -43,17 +43,14 @@ export default function App() {
     selectedPaths,
     includeTreeInPrompt,
   } = useFileStore()
+  const [hasLoadedConfig, setHasLoadedConfig] = useState(false)
 
-  const {
-    instructions,
-    setInstructions,
-    setStateFromConfig: setInstructionsConfig,
-  } = useInstructionsStore()
-  const {
-    customInstructions,
-    setAllCustomInstructions,
-    setStateFromConfig: setCustomConfig,
-  } = useCustomInstructionsStore()
+  const { instructions, setStateFromConfig: setInstructionsConfig } =
+    useInstructionsStore()
+
+  const { customInstructions, setStateFromConfig: setCustomConfig } =
+    useCustomInstructionsStore()
+
   const { themeMode, setStateFromConfig: setThemeConfig } = useThemeStore()
 
   const [changesModalOpen, setChangesModalOpen] = useState(false)
@@ -82,6 +79,7 @@ export default function App() {
     ;(async () => {
       try {
         const resp = await fetch('/api/pjp-config')
+        console.log('data:', resp)
         if (resp.ok) {
           const data = await resp.json()
           setInstructionsConfig(data)
@@ -92,6 +90,8 @@ export default function App() {
         }
       } catch (e) {
         console.error('Failed to load pjp-config:', e)
+      } finally {
+        setHasLoadedConfig(true)
       }
     })()
   }, [setInstructionsConfig, setCustomConfig, setThemeConfig])
@@ -99,6 +99,8 @@ export default function App() {
   // Track all config changes and post them to server.
   const prevConfigRef = useRef<any>(null)
   useEffect(() => {
+    if (!hasLoadedConfig) return
+
     const config = {
       instructions,
       customInstructions,
@@ -106,6 +108,7 @@ export default function App() {
       ignorePatterns,
       includeTreeInPrompt,
       themeMode,
+      hasLoadedConfig,
     }
 
     const prevConfig = prevConfigRef.current
@@ -125,6 +128,7 @@ export default function App() {
       })()
     }
   }, [
+    hasLoadedConfig,
     instructions,
     customInstructions,
     selectedPaths,
