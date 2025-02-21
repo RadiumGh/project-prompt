@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import path from 'path'
-import { listDirectory } from '@/server-utils/listDirectory'
-import { watchProjectDir } from '@/server-utils/fileWatcher'
+import { listDirectory } from '../../../server-utils/listDirectory'
+import { watchProjectDir } from '../../../server-utils/fileWatcher'
 
 // Store active SSE clients
 const clients = new Set<ReadableStreamDefaultController>()
 
 export async function GET(req: NextRequest) {
   try {
-  const baseDir = process.env.PJP_PROJECT_ROOT || process.cwd()
+    const baseDir = process.env.PJP_PROJECT_ROOT || process.cwd()
     const isSSE = req.headers.get('accept') === 'text/event-stream'
 
     // List the directory as before

@@ -1,26 +1,26 @@
-import os from 'os';
-import path from 'path';
-import fs from 'fs/promises';
+import os from 'os'
+import path from 'path'
+import fs from 'fs/promises'
 
 /**
  * Represents the shape of our pjp-config.json data.
  */
 interface PjpConfig {
-  instructions: string;
+  instructions: string
   customInstructions: Array<{
-    id: string;
-    name: string;
-    content: string;
-    isActive: boolean;
-  }>;
-  selectedPaths: string[];
-  excludedPaths: string[];
-  ignorePatterns: string;
-  includeTreeInPrompt: boolean;
-  themeMode: 'light' | 'dark';
+    id: string
+    name: string
+    content: string
+    isActive: boolean
+  }>
+  selectedPaths: string[]
+  excludedPaths: string[]
+  ignorePatterns: string
+  includeTreeInPrompt: boolean
+  themeMode: 'light' | 'dark'
 }
 
-const CONFIG_FILE = path.join(os.homedir(), 'pjp-config.json');
+const CONFIG_FILE = path.join(os.homedir(), 'pjp-config.json')
 
 /**
  * Load the pjp-config.json from the user's home directory if it exists, otherwise returns a default config.
@@ -28,17 +28,27 @@ const CONFIG_FILE = path.join(os.homedir(), 'pjp-config.json');
  */
 export async function loadPjpConfig(): Promise<PjpConfig> {
   try {
-    const contents = await fs.readFile(CONFIG_FILE, 'utf-8');
-    const parsed = JSON.parse(contents);
+    const contents = await fs.readFile(CONFIG_FILE, 'utf-8')
+    const parsed = JSON.parse(contents)
     return {
       instructions: parsed.instructions ?? '',
-      customInstructions: Array.isArray(parsed.customInstructions) ? parsed.customInstructions : [],
-      selectedPaths: Array.isArray(parsed.selectedPaths) ? parsed.selectedPaths : [],
-      excludedPaths: Array.isArray(parsed.excludedPaths) ? parsed.excludedPaths : [],
-      ignorePatterns: typeof parsed.ignorePatterns === 'string' ? parsed.ignorePatterns : '',
-      includeTreeInPrompt: typeof parsed.includeTreeInPrompt === 'boolean' ? parsed.includeTreeInPrompt : true,
-      themeMode: parsed.themeMode === 'light' ? 'light' : 'dark'
-    };
+      customInstructions: Array.isArray(parsed.customInstructions)
+        ? parsed.customInstructions
+        : [],
+      selectedPaths: Array.isArray(parsed.selectedPaths)
+        ? parsed.selectedPaths
+        : [],
+      excludedPaths: Array.isArray(parsed.excludedPaths)
+        ? parsed.excludedPaths
+        : [],
+      ignorePatterns:
+        typeof parsed.ignorePatterns === 'string' ? parsed.ignorePatterns : '',
+      includeTreeInPrompt:
+        typeof parsed.includeTreeInPrompt === 'boolean'
+          ? parsed.includeTreeInPrompt
+          : true,
+      themeMode: parsed.themeMode === 'light' ? 'light' : 'dark',
+    }
   } catch (err) {
     return {
       instructions: '',
@@ -47,8 +57,8 @@ export async function loadPjpConfig(): Promise<PjpConfig> {
       excludedPaths: [],
       ignorePatterns: '',
       includeTreeInPrompt: true,
-      themeMode: 'dark'
-    };
+      themeMode: 'dark',
+    }
   }
 }
 
@@ -57,6 +67,6 @@ export async function loadPjpConfig(): Promise<PjpConfig> {
  * @param data PjpConfig object to save.
  */
 export async function savePjpConfig(data: PjpConfig) {
-  const jsonString = JSON.stringify(data, null, 2);
-  await fs.writeFile(CONFIG_FILE, jsonString, 'utf-8');
+  const jsonString = JSON.stringify(data, null, 2)
+  await fs.writeFile(CONFIG_FILE, jsonString, 'utf-8')
 }

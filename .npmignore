@@ -1,4 +1,9 @@
 src/
-.next/
 tests/
 tsconfig.build.json
+.idea/
+prompts/
+development-steps/
+.plan/
+ai-context/
+.next/cache/

@@ -18,13 +18,10 @@ console.log(`Starting Project Prompt with project root: ${projectRoot}`)
 
 // Determine the project-prompt project root (directory of this cli.js)
 const projectPromptRoot = path.dirname(__filename)
-console.log('projectpromptroot:', projectPromptRoot)
 
 // Check if a production build exists (.next directory exists)
 const nextBuildDir = path.join(projectPromptRoot, '.next')
 const nextCmd = fs.existsSync(nextBuildDir) ? 'start' : 'dev'
-
-console.log('nextCmd:', nextCmd)
 
 const child = spawn('npx', ['next', nextCmd], {
   cwd: projectPromptRoot,

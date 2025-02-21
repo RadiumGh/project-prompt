@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { loadPjpConfig, savePjpConfig } from '@/server-utils/pjpConfig'
+import { loadPjpConfig, savePjpConfig } from '../../../server-utils/pjpConfig'
 
 export async function GET() {
   try {
