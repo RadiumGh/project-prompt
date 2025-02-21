@@ -8,7 +8,7 @@ const clients = new Set<ReadableStreamDefaultController>()
 
 export async function GET(req: NextRequest) {
   try {
-    const baseDir = process.cwd()
+  const baseDir = process.env.PJP_PROJECT_ROOT || process.cwd()
     const isSSE = req.headers.get('accept') === 'text/event-stream'
 
     // List the directory as before

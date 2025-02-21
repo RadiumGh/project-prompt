@@ -33,7 +33,6 @@ export function listDirectory(baseDir: string, currentPath = ''): DirNode[] {
       continue
     }
     const entryPath = path.join(currentPath, entry.name)
-    const fullPath = path.join(absPath, entry.name)
     const isDir = entry.isDirectory()
 
     if (isDir) {

@@ -14,7 +14,7 @@ function resolveAndCheck(baseDir: string, relPath: string): string {
 
 export async function POST(req: NextRequest) {
   try {
-    const baseDir = process.cwd();
+  const baseDir = process.env.PJP_PROJECT_ROOT || process.cwd();
     const body = await req.json();
 
     if (!body || !Array.isArray(body.paths)) {

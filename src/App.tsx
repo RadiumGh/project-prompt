@@ -59,7 +59,6 @@ export default function App() {
   const openChangesModal = () => setChangesModalOpen(true)
   const closeChangesModal = () => setChangesModalOpen(false)
 
-  const openPromptStoreModal = () => setPromptStoreModalOpen(true)
   const closePromptStoreModal = () => setPromptStoreModalOpen(false)
 
   const handleClearSelection = () => {

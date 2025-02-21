@@ -55,7 +55,6 @@ export interface ChangesJson {
 
 export async function applyJsonChanges(
   changesJson: ChangesJson,
-  rootDirHandle: FileSystemDirectoryHandle,
 ): Promise<void> {
   if (!changesJson || !Array.isArray(changesJson.changes)) {
     throw new Error("Invalid changes JSON format. 'changes' array is required.")

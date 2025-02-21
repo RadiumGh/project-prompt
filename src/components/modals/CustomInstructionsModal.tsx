@@ -1,4 +1,4 @@
-"use client"
+'use client'
 import { useState } from 'react'
 import {
   Box,
@@ -45,7 +45,7 @@ const StyledDialogTitle = styled(DialogTitle)(() => ({
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'center',
-}));
+}))
 
 const ModalContent = styled(Box)(() => ({
   paddingLeft: 24,
@@ -56,7 +56,7 @@ const ModalContent = styled(Box)(() => ({
   gap: 16,
   minHeight: '400px',
   maxHeight: '70vh',
-}));
+}))
 
 export default function CustomInstructionsModal({ open, onClose }: Props) {
   const {
@@ -64,72 +64,71 @@ export default function CustomInstructionsModal({ open, onClose }: Props) {
     addCustomInstruction,
     updateCustomInstruction,
     removeCustomInstruction,
-    toggleCustomInstruction,
     reorderCustomInstructions,
-  } = useCustomInstructionsStore();
+  } = useCustomInstructionsStore()
 
-  const [isEditing, setIsEditing] = useState(false);
-  const [editId, setEditId] = useState<string | null>(null);
-  const [nameValue, setNameValue] = useState('');
-  const [contentValue, setContentValue] = useState('');
+  const [isEditing, setIsEditing] = useState(false)
+  const [editId, setEditId] = useState<string | null>(null)
+  const [nameValue, setNameValue] = useState('')
+  const [contentValue, setContentValue] = useState('')
 
   // We can store the item being dragged
-  const [_, setActiveDragId] = useState<string | null>(null);
+  const [_, setActiveDragId] = useState<string | null>(null)
 
   const handleClose = () => {
-    resetForm();
-    onClose();
-  };
+    resetForm()
+    onClose()
+  }
 
   const resetForm = () => {
-    setIsEditing(false);
-    setEditId(null);
-    setNameValue('');
-    setContentValue('');
-  };
+    setIsEditing(false)
+    setEditId(null)
+    setNameValue('')
+    setContentValue('')
+  }
 
   const handleSubmit = () => {
-    if (!nameValue.trim() || !contentValue.trim()) return;
+    if (!nameValue.trim() || !contentValue.trim()) return
 
     if (isEditing && editId) {
-      updateCustomInstruction(editId, nameValue, contentValue);
+      updateCustomInstruction(editId, nameValue, contentValue)
     } else {
-      addCustomInstruction(nameValue, contentValue);
+      addCustomInstruction(nameValue, contentValue)
     }
-    resetForm();
-  };
+    resetForm()
+  }
 
   const handleEdit = (id: string, name: string, content: string) => {
-    setIsEditing(true);
-    setEditId(id);
-    setNameValue(name);
-    setContentValue(content);
-  };
+    setIsEditing(true)
+    setEditId(id)
+    setNameValue(name)
+    setContentValue(content)
+  }
 
   const handleDelete = (id: string) => {
-    removeCustomInstruction(id);
-  };
+    removeCustomInstruction(id)
+  }
 
   // DnD Kit sensors
-  const sensors = useSensors(useSensor(PointerSensor));
+  const sensors = useSensors(useSensor(PointerSensor))
 
   const handleDragStart = (event: DragStartEvent) => {
-    setActiveDragId(event.active.id as string);
-  };
+    setActiveDragId(event.active.id as string)
+  }
 
   const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-    setActiveDragId(null);
+    const { active, over } = event
+    setActiveDragId(null)
 
-    if (!over || active.id === over.id) return;
+    if (!over || active.id === over.id) return
 
     // Find oldIndex, newIndex
-    const oldIndex = customInstructions.findIndex(ci => ci.id === active.id);
-    const newIndex = customInstructions.findIndex(ci => ci.id === over.id);
+    const oldIndex = customInstructions.findIndex(ci => ci.id === active.id)
+    const newIndex = customInstructions.findIndex(ci => ci.id === over.id)
     if (oldIndex !== -1 && newIndex !== -1) {
-      reorderCustomInstructions(oldIndex, newIndex);
+      reorderCustomInstructions(oldIndex, newIndex)
     }
-  };
+  }
 
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
@@ -173,8 +172,8 @@ export default function CustomInstructionsModal({ open, onClose }: Props) {
               >
                 <List dense sx={{ px: 2 }}>
                   {customInstructions.map(ci => {
-                    const tokenCount = approximateTokens(ci.content);
-                    const displayName = `${ci.name} (${formatTokenCount(tokenCount)} T)`;
+                    const tokenCount = approximateTokens(ci.content)
+                    const displayName = `${ci.name} (${formatTokenCount(tokenCount)} T)`
 
                     return (
                       <SortableCustomInstructionItem key={ci.id} ci={ci}>
@@ -212,7 +211,7 @@ export default function CustomInstructionsModal({ open, onClose }: Props) {
                           </Tooltip>
                         </ListItemSecondaryAction>
                       </SortableCustomInstructionItem>
-                    );
+                    )
                   })}
                 </List>
               </SortableContext>
@@ -243,5 +242,5 @@ export default function CustomInstructionsModal({ open, onClose }: Props) {
         </Stack>
       </ModalContent>
     </Dialog>
-  );
+  )
 }

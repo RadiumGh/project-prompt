@@ -1,7 +1,10 @@
 {
-  "name": "repo-prompt-webapp",
-  "version": "1.0.0",
+  "name": "@weblite/pjp",
+  "version": "1.0.0-beta.2",
   "private": true,
+  "bin": {
+    "pjp": "./cli.js"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",

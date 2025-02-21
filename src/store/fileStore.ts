@@ -147,7 +147,7 @@ export const useFileStore = create<FileStoreState>((set, get) => ({
     }
   },
 
-  toggleSelection(path, handle, isDirectory) {
+  toggleSelection(path, _, isDirectory) {
     const { selectedPaths, excludedPaths, fileTree } = get()
 
     const newSelectedPaths = [...selectedPaths]

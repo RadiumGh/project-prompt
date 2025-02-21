@@ -12,7 +12,6 @@ import {
 } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import { styled } from '@mui/material/styles'
-import { useFileStore } from '../../store/fileStore'
 import { useToastStore } from '../../store/toastStore'
 import axios from 'axios'
 
@@ -56,7 +55,6 @@ const ModalContent = styled(Box)(() => ({
 }))
 
 export default function ApplyChangesModal({ open, onClose }: Props) {
-  const { lastDirHandle } = useFileStore()
   const { showSuccessToast, showErrorToast } = useToastStore()
 
   const [jsonText, setJsonText] = useState('')

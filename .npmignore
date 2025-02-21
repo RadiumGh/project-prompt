@@ -1,0 +1,4 @@
+src/
+.next/
+tests/
+tsconfig.build.json

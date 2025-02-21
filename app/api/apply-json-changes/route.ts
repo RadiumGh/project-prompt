@@ -43,8 +43,9 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // We use process.cwd() as a base directory. applyJsonChangesNode itself will throw if path escapes baseDir.
-    await applyJsonChangesNode(data, process.cwd());
+  // We use process.env.PJP_PROJECT_ROOT if provided, otherwise process.cwd() as a base directory.
+  const baseDir = process.env.PJP_PROJECT_ROOT || process.cwd();
+  await applyJsonChangesNode(data, baseDir);
 
     // Return success
     return NextResponse.json({ status: 'ok' });
