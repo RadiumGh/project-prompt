@@ -7,3 +7,13 @@ development-steps/
 .plan/
 ai-context/
 .next/cache/
+.git/
+.github/
+.gitignore
+package-lock.json
+yarn.lock
+tsconfig.tsbuildinfo
+CNAME
+*.log
+node_modules/
+.prettierrc.json

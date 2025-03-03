@@ -1,6 +1,7 @@
 {
-  "name": "project-prompt",
-  "version": "1.0.1",
+  "name": "project-prompt-cli",
+  "version": "1.2.0",
+  "description": "A Next.js application that lets users select local files, generate combined prompts, and apply JSON-based code changes",
   "private": false,
   "bin": {
     "pjp": "./cli.js"
@@ -8,7 +9,25 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "prepare": "node install.js",
+    "postinstall": "node install.js"
+  },
+  "keywords": [
+    "next.js",
+    "project",
+    "prompt",
+    "file-management",
+    "cli"
+  ],
+  "author": "",
+  "license": "AGPL-3.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yourusername/project-prompt-cli.git"
+  },
+  "engines": {
+    "node": ">=16.0.0"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
